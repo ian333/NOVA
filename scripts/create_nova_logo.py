@@ -1,9 +1,15 @@
 """Create a simple NOVA logo in red and blue colors."""
 from PIL import Image, ImageDraw, ImageFont
+from pathlib import Path
 import os
 
 def create_nova_logo():
     """Create NOVA logo with red and blue colors."""
+    # Get output directory relative to script location
+    script_dir = Path(__file__).parent.parent
+    output_dir = script_dir / 'docs' / 'assets' / 'branding'
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
     # Create a new image with white background
     width, height = 800, 200
     img = Image.new('RGB', (width, height), color='white')
@@ -42,13 +48,13 @@ def create_nova_logo():
     draw.text((x, y), text, fill='white', font=font)
     
     # Save the logo
-    output_path = '/home/runner/work/NOVA/NOVA/docs/assets/branding/nova_logo.png'
+    output_path = output_dir / 'nova_logo.png'
     img.save(output_path)
     print(f"Logo created at {output_path}")
     
     # Create a smaller version for headers
     img_small = img.resize((400, 100), Image.Resampling.LANCZOS)
-    output_path_small = '/home/runner/work/NOVA/NOVA/docs/assets/branding/nova_logo_small.png'
+    output_path_small = output_dir / 'nova_logo_small.png'
     img_small.save(output_path_small)
     print(f"Small logo created at {output_path_small}")
 

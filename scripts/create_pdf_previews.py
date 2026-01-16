@@ -1,13 +1,16 @@
 """Generate preview images from PDFs for documentation."""
 from pdf2image import convert_from_path
 from PIL import Image
+from pathlib import Path
 import os
 
 def create_pdf_previews():
     """Create preview images from PDF files."""
-    docs_dir = '/home/runner/work/NOVA/NOVA/docs'
-    output_dir = os.path.join(docs_dir, 'assets', 'previews')
-    os.makedirs(output_dir, exist_ok=True)
+    # Get directories relative to script location
+    script_dir = Path(__file__).parent.parent
+    docs_dir = script_dir / 'docs'
+    output_dir = docs_dir / 'assets' / 'previews'
+    output_dir.mkdir(parents=True, exist_ok=True)
     
     # PDF files to convert
     pdf_files = [

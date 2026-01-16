@@ -1,10 +1,14 @@
 """Create decorative icons and elements for NOVA PDFs."""
 from PIL import Image, ImageDraw
+from pathlib import Path
 import os
 
 def create_icons():
     """Create simple icon set for documentation."""
-    output_dir = '/home/runner/work/NOVA/NOVA/docs/assets/branding'
+    # Get output directory relative to script location
+    script_dir = Path(__file__).parent.parent
+    output_dir = script_dir / 'docs' / 'assets' / 'branding'
+    output_dir.mkdir(parents=True, exist_ok=True)
     
     # Icon 1: Warning/Alert icon (red circle with exclamation)
     img = Image.new('RGBA', (100, 100), (0, 0, 0, 0))

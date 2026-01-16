@@ -329,7 +329,7 @@ def md_to_html(md_text, base_path):
                 if src and not (src.startswith("http://") or src.startswith("https://") or src.startswith("file://")):
                     abs_path = os.path.abspath(os.path.join(base_path, src))
                     if os.path.exists(abs_path):
-                        attrs["src"] = "file://" + abs_path.replace('\\\\', '/')
+                        attrs["src"] = "file://" + abs_path.replace('\\', '/')
                 attr_str = "".join(f' {k}="{v}"' for k, v in attrs.items())
                 self.out += f"<{tag}{attr_str}>"
             else:
@@ -349,7 +349,7 @@ def md_to_html(md_text, base_path):
                 if src and not (src.startswith("http://") or src.startswith("https://") or src.startswith("file://")):
                     abs_path = os.path.abspath(os.path.join(base_path, src))
                     if os.path.exists(abs_path):
-                        attrs["src"] = "file://" + abs_path.replace('\\\\', '/')
+                        attrs["src"] = "file://" + abs_path.replace('\\', '/')
                 attr_str = "".join(f' {k}="{v}"' for k, v in attrs.items())
                 self.out += f"<{tag}{attr_str}/>"
             else:
