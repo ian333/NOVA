@@ -5,6 +5,10 @@ ColorEasyPICO2 (RP2350A). Esta documentación inicial explica qué es el proyect
 cómo montarlo, probarlo y opciones para venta/kit. Está basada en el proyecto
 referencia en OSHWLab: https://oshwlab.com/lckfb-team/coloreasypicox
 
+> **📘 Documentación PDF Mejorada**: Toda la documentación está disponible en PDFs
+> profesionales con estilo visual inspirado en los handbooks de Raspberry Pi,
+> usando los colores de marca NOVA (rojo y azul). Ver `docs/VISUAL_STYLE_GUIDE.md`.
+
 ## Introducción
 
 NOVA es una tarjeta de desarrollo ligera pensada para proyectos RGB/LED,
@@ -273,11 +277,32 @@ licencia adecuada para NOVA antes de publicar.
 
 ---
 
-Si quieres, puedo:
-- Generar un PDF del instructivo listo para clientes,
-- Extraer el BOM completo desde la referencia y formatearlo,
-- Añadir imágenes y pasos de montaje detallados para el instructivo.
+## Documentación y PDFs
 
-Di cuál de estas tareas quieres que haga a continuación.
+La documentación de NOVA está disponible en formato PDF con un diseño profesional 
+inspirado en los handbooks de Raspberry Pi:
 
-# NOVA
+### PDFs Disponibles
+
+- **`docs/manual_for_kids.pdf`** - Manual de inicio paso a paso para principiantes
+- **`docs/Documento_NOVA.pdf`** - Instructivo completo del producto
+- **`docs/NOVA_Guide.pdf`** - Guía completa generada del README
+
+### Estilo Visual NOVA
+
+Los PDFs utilizan:
+- **Colores de marca**: Rojo (#DC2626) y Azul (#2563EB)
+- **Tipografía profesional**: DejaVu Sans
+- **Elementos visuales**: Logo, iconos, bloques de código estilizados
+- **Diseño atractivo**: Para niños, técnicos e ingenieros
+
+### Generar PDFs
+
+Para regenerar los PDFs con el estilo mejorado:
+
+```bash
+python3 scripts/build_all_pdfs.py
+```
+
+Ver `docs/VISUAL_STYLE_GUIDE.md` para más detalles sobre el estilo visual y 
+cómo personalizar los PDFs.
