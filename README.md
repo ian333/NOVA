@@ -284,9 +284,31 @@ inspirado en los handbooks de Raspberry Pi:
 
 ### PDFs Disponibles
 
+#### Guías Principales
 - **`docs/manual_for_kids.pdf`** - Manual de inicio paso a paso para principiantes
 - **`docs/Documento_NOVA.pdf`** - Instructivo completo del producto
 - **`docs/NOVA_Guide.pdf`** - Guía completa generada del README
+
+#### Guías Especializadas para el Mercado LATAM
+
+**Para Técnicos e Ingenieros:**
+- **`docs/guia_tecnica_profesional.pdf`** - Guía técnica completa con proyectos industriales
+  - Control de motores trifásicos con FOC
+  - Sistemas IoT industriales con MQTT
+  - Adquisición de datos de alta velocidad
+  - Comunicación Modbus RTU (RS485)
+  - Control PID para procesos industriales
+  - Comparativa con Arduino y ESP32
+
+**Para Niños y Jóvenes Makers:**
+- **`docs/guia_ninos_robots.pdf`** - Guía de construcción de robots increíbles
+  - Ojos de robot que parpadean
+  - Robot con brazos móviles usando servos
+  - Robot luchador con sensores
+  - Dinosaurio robot con efectos especiales
+  - Robot gigante estilo mecha
+
+Estas guías están diseñadas para competir con Adafruit y Arduino en el mercado mexicano y latinoamericano, explicando el RP2350 (el modelo más reciente de Raspberry Pi Pico).
 
 ### Estilo Visual NOVA
 

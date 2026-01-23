@@ -27,6 +27,8 @@ def build_all_pdfs():
         (docs_dir / "manual_for_kids.md", docs_dir / "manual_for_kids.pdf"),
         (docs_dir / "instructivo.md", docs_dir / "Documento_NOVA.pdf"),  # Replace old Documento_NOVA.pdf
         (repo_root / "README.md", docs_dir / "NOVA_Guide.pdf"),
+        (docs_dir / "guia_tecnica_profesional.md", docs_dir / "guia_tecnica_profesional.pdf"),  # Professional/Technical guide
+        (docs_dir / "guia_ninos_robots.md", docs_dir / "guia_ninos_robots.pdf"),  # Kids/Robots guide
     ]
     
     print("=" * 60)

@@ -16,7 +16,9 @@ def create_pdf_previews():
     pdf_files = [
         'manual_for_kids.pdf',
         'Documento_NOVA.pdf',
-        'NOVA_Guide.pdf'
+        'NOVA_Guide.pdf',
+        'guia_tecnica_profesional.pdf',
+        'guia_ninos_robots.pdf'
     ]
     
     for pdf_file in pdf_files:
