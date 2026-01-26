@@ -5,6 +5,10 @@ ColorEasyPICO2 (RP2350A). Esta documentación inicial explica qué es el proyect
 cómo montarlo, probarlo y opciones para venta/kit. Está basada en el proyecto
 referencia en OSHWLab: https://oshwlab.com/lckfb-team/coloreasypicox
 
+> **📘 Documentación PDF Mejorada**: Toda la documentación está disponible en PDFs
+> profesionales con estilo visual inspirado en los handbooks de Raspberry Pi,
+> usando los colores de marca NOVA (rojo y azul). Ver `docs/VISUAL_STYLE_GUIDE.md`.
+
 ## Introducción
 
 NOVA es una tarjeta de desarrollo ligera pensada para proyectos RGB/LED,
@@ -273,11 +277,54 @@ licencia adecuada para NOVA antes de publicar.
 
 ---
 
-Si quieres, puedo:
-- Generar un PDF del instructivo listo para clientes,
-- Extraer el BOM completo desde la referencia y formatearlo,
-- Añadir imágenes y pasos de montaje detallados para el instructivo.
+## Documentación y PDFs
 
-Di cuál de estas tareas quieres que haga a continuación.
+La documentación de NOVA está disponible en formato PDF con un diseño profesional 
+inspirado en los handbooks de Raspberry Pi:
 
-# NOVA
+### PDFs Disponibles
+
+#### Guías Principales
+- **`docs/manual_for_kids.pdf`** - Manual de inicio paso a paso para principiantes
+- **`docs/Documento_NOVA.pdf`** - Instructivo completo del producto
+- **`docs/NOVA_Guide.pdf`** - Guía completa generada del README
+
+#### Guías Especializadas para el Mercado LATAM
+
+**Para Técnicos e Ingenieros:**
+- **`docs/guia_tecnica_profesional.pdf`** - Guía técnica completa con proyectos industriales
+  - Control de motores trifásicos con FOC
+  - Sistemas IoT industriales con MQTT
+  - Adquisición de datos de alta velocidad
+  - Comunicación Modbus RTU (RS485)
+  - Control PID para procesos industriales
+  - Comparativa con Arduino y ESP32
+
+**Para Niños y Jóvenes Makers:**
+- **`docs/guia_ninos_robots.pdf`** - Guía de construcción de robots increíbles
+  - Ojos de robot que parpadean
+  - Robot con brazos móviles usando servos
+  - Robot luchador con sensores
+  - Dinosaurio robot con efectos especiales
+  - Robot gigante estilo mecha
+
+Estas guías están diseñadas para competir con Adafruit y Arduino en el mercado mexicano y latinoamericano, explicando el RP2350 (el modelo más reciente de Raspberry Pi Pico).
+
+### Estilo Visual NOVA
+
+Los PDFs utilizan:
+- **Colores de marca**: Rojo (#DC2626) y Azul (#2563EB)
+- **Tipografía profesional**: DejaVu Sans
+- **Elementos visuales**: Logo, iconos, bloques de código estilizados
+- **Diseño atractivo**: Para niños, técnicos e ingenieros
+
+### Generar PDFs
+
+Para regenerar los PDFs con el estilo mejorado:
+
+```bash
+python3 scripts/build_all_pdfs.py
+```
+
+Ver `docs/VISUAL_STYLE_GUIDE.md` para más detalles sobre el estilo visual y 
+cómo personalizar los PDFs.
