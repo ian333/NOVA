@@ -1,4 +1,14 @@
 # NOVA RP2350 — Guía de Inicio Práctico
+## Introducción: Más allá de la computadora de escritorio
+
+Tal vez pienses en las computadoras como esos dispositivos con pantalla y teclado que tienes en tu escritorio, y es cierto, lo son. Pero no son el único tipo.
+
+En esta guía exploraremos los microcontroladores: pequeñas unidades de procesamiento que seguramente ya tienes en casa sin saberlo. Es muy probable que tu lavadora, microondas o termostato estén controlados por uno. Sin embargo, esos dispositivos suelen ser cerrados: sus fabricantes dificultan o impiden que modifiques el software que ejecutan.
+
+**NOVA**, por otro lado, es diferente. Se puede reprogramar fácilmente todas las veces que quieras a través de una simple conexión USB. En las siguientes páginas veremos cómo empezar a utilizar este hardware y cómo combinarlo con otros componentes electrónicos.
+
+Lo que construyas con ellos depende totalmente de ti.
+
 ## Introducción al Mundo Maker y Electrónica
 
 Bienvenido a la guía de **NOVA**. Esta documentación está diseñada para hobbistas, estudiantes y entusiastas que quieren entender **cómo funcionan las cosas** sin perderse en tecnicismos matemáticos complejos.
@@ -7,7 +17,41 @@ Si tu objetivo es aprender electrónica programable, robótica básica y control
 
 ---
 
-## 1. Conociendo tu Herramienta: El Chip RP2350
+## Contenidos
+
+**Capítulo 1: Conoce tu NOVA**
+Familiarízate con tu nuevo y potente microcontrolador, aprende cómo usar sus pines e instala MicroPython para programarlo.
+
+**Capítulo 2: Programación con MicroPython**
+Conecta una computadora y comienza a escribir programas para tu NOVA usando el lenguaje MicroPython.
+
+**Capítulo 3: Computación Física**
+Aprende sobre los pines de tu NOVA y los componentes electrónicos que puedes conectar y controlar.
+
+**Capítulo 4: Computación Física con NOVA**
+Empieza a conectar componentes electrónicos básicos a tu NOVA y escribe programas para controlarlos y detectar sus señales.
+
+**Capítulo 5: Controlador de Semáforos**
+Crea tu propio mini sistema de cruce peatonal usando múltiples LEDs y un botón pulsador.
+
+**Capítulo 6: Juego de Reacción**
+Construye un juego simple de tiempos de reacción usando un LED y botones, para uno o dos jugadores.
+
+**Capítulo 7: Alarma Antirrobo**
+Usa un sensor de movimiento para detectar intrusos y activa la alarma con una luz intermitente y una sirena.
+
+**Capítulo 8: Medidor de Temperatura**
+Usa el ADC integrado de NOVA para convertir entradas analógicas y lee su sensor de temperatura interno.
+
+**Capítulo 9: Registrador de Datos (Data Logger)**
+Convierte tu NOVA en un dispositivo de registro de temperatura y desconéctalo de la computadora para hacerlo totalmente portátil.
+
+**Capítulo 10: Protocolos de Comunicación Digital: I2C y SPI**
+Explora estos dos protocolos de comunicación populares y úsalos para mostrar datos en una pantalla LCD.
+
+---
+
+## Capítulo 1: Conoce tu NOVA
 
 NOVA es una herramienta potente. En su corazón late el **Raspberry Pi RP2350A**, un microcontrolador moderno.
 
@@ -18,7 +62,7 @@ NOVA es una herramienta potente. En su corazón late el **Raspberry Pi RP2350A**
 
 ---
 
-## 2. Preparando el Entorno
+## Capítulo 2: Programación con MicroPython
 
 Para comunicarnos con NOVA, usaremos **MicroPython**.
 *   **¿Qué es?** Es una versión de Python 3 optimizada para funcionar en microcontroladores. Es el lenguaje ideal para empezar porque es legible y potente.
@@ -32,7 +76,21 @@ Para comunicarnos con NOVA, usaremos **MicroPython**.
 
 ---
 
-## 3. Práctica 1: Control Digital (Salidas)
+## Capítulo 3: Computación Física
+
+El mundo real no es "1 o 0". La temperatura, la luz o el sonido varían suavemente.
+*   NOVA tiene conversores **Analogico-Digitales (ADC)** de 12-bits.
+*   Permiten leer voltajes variables (0V a 3.3V) y convertirlos en un número (0 a 65535). Esto es fundamental para leer potenciómetros, sensores de temperatura LM35, etc.
+
+En la industria y proyectos avanzados, los componentes "hablan" entre sí.
+*   **I2C:** Para conectar sensores modernos (acelerómetros, pantallas OLED) usando solo 2 cables.
+*   **UART/Serial:** Para comunicar tu NOVA con otros módulos como GPS, Bluetooth o WiFi (ESP-01).
+
+---
+
+## Capítulo 4: Computación Física con NOVA
+
+### Control Digital (Salidas)
 
 Lo primero en electrónica es aprender a controlar el estado de un pin: **Alto (3.3V)** o **Bajo (0V)**.
 
@@ -62,16 +120,9 @@ while True:
     time.sleep(1)
 ```
 
----
+### Lógica y Simulación (LEDs)
 
-## 4. Práctica 2: Lógica y Aleatoriedad (Simulación de Comportamiento)
-
-Los robots parecen "vivos" no porque tengan conciencia, sino porque usan algoritmos para tomar decisiones. Vamos a usar el módulo `random` para simular un comportamiento impredecible usando dos LEDs (como si fueran ojos).
-
-**Concepto Clave:**
-Aquí veremos cómo crear **funciones**. Las funciones nos permiten encapsular comportamientos (como "parpadear" o "mirar a un lado") y reutilizarlos.
-
-**Código:**
+Vamos a usar el módulo `random` para simular un comportamiento impredecible usando dos LEDs (como si fueran ojos).
 
 ```python
 from machine import Pin
@@ -125,21 +176,9 @@ while True:
         escaneo()
 ```
 
----
+### Movimiento y PWM (Servomotores)
 
-## 5. Práctica 3: Movimiento y PWM (Servomotores)
-
-Un servomotor no funciona simplemente "encendiendo y apagando" la corriente. Necesita una **señal de control precisa**.
-
-### ¿Qué es PWM (Pulse Width Modulation)?
-Es una técnica para simular señales analógicas o enviar datos codificados pulsando una señal digital muy rápido.
-*   Para un LED, el PWM controla el brillo.
-*   Para un Servo, el PWM le indica **en qué ángulo posicionarse** (0° a 180°).
-
-### Advertencia de Energía ⚠️
-Un servomotor es un dispositivo mecánico. Consume mucha más energía de la que el puerto USB de un ordenador o el regulador de la placa pueden dar cómodamente si hay carga.
-*   **Correcto:** Alimentar el servo con una fuente externa (4 pilas AA o batería 5V) y unir las tierras (GND).
-*   **Señal:** Solo el cable de señal (Naranja/Amarillo) va al pin de NOVA.
+Un servomotor no funciona simplemente "encendiendo y apagando" la corriente. Necesita una **señal de control precisa** usando PWM (Pulse Width Modulation).
 
 **Código de Control de Servo:**
 
@@ -155,12 +194,8 @@ servo.freq(50)
 def mover_servo(angulo):
     """
     Convierte un ángulo (0-180) al ciclo de trabajo (duty) necesario.
-    Cálculo aproximado para servos SG90:
-    - 0 grados   ~ 1000 us pulso
-    - 180 grados ~ 9000 us pulso
-    Nota: Estos valores pueden variar según el fabricante del servo.
     """
-    # Mapeo simple: 0-180 -> duty_u16 (aprox 1638 a 8192)
+    # Mapeo simple: 0-180 -> duty_u16
     duty = int(1638 + (angulo / 180) * (8192 - 1638))
     servo.duty_u16(duty)
 
@@ -180,21 +215,7 @@ while True:
 
 ---
 
-## 6. Siguientes Pasos Intermedios
-
-Una vez domines las salidas digitales (LEDs) y el PWM (Servos), el siguiente nivel es la **lectura de datos** y la **comunicación**.
-
-### Sensores Analógicos (ADC)
-El mundo real no es "1 o 0". La temperatura, la luz o el sonido varían suavemente.
-*   NOVA tiene conversores **Analogico-Digitales (ADC)** de 12-bits.
-*   Permiten leer voltajes variables (0V a 3.3V) y convertirlos en un número (0 a 65535). Esto es fundamental para leer potenciómetros, sensores de temperatura LM35, etc.
-
-### Protocolos de Comunicación
-En la industria y proyectos avanzados, los componentes "hablan" entre sí.
-*   **I2C:** Para conectar sensores modernos (acelerómetros, pantallas OLED) usando solo 2 cables.
-*   **UART/Serial:** Para comunicar tu NOVA con otros módulos como GPS, Bluetooth o WiFi (ESP-01).
-
----
+*Nota: Los capítulos siguientes (5 al 10) están en desarrollo para futuras actualizaciones.*
 
 ## Recursos Adicionales
 

@@ -1,0 +1,414 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{fontspec}
+% \usepackage[spanish]{babel} % Spanish language support not available in environment
+
+% Define custom font for TOC
+\newfontfamily\shrikhand[Path=assets/fonts/]{Shrikhand-Regular.ttf}
+
+\renewcommand{\contentsname}{\textcolor{blue}{\shrikhand Contenido}} % Custom TOC title
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+
+% Configuration for code listings
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=4
+}
+
+\lstset{style=mystyle}
+\geometry{margin=2.5cm}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{\fill}
+    
+    % Imagen de portada (Portada completa)
+    \includegraphics[width=\textwidth,height=0.95\textheight,keepaspectratio]{assets/portada}
+    
+    \vspace*{\fill}
+\end{titlepage}
+
+%\tableofcontents
+%\newpage
+
+\section*{\textcolor{blue}{\shrikhand Bienvenido}}
+\addcontentsline{toc}{section}{Bienvenido}
+
+Tal vez pienses en las computadoras como esos dispositivos con pantalla y teclado que tienes en tu escritorio, y es cierto, lo son. Pero no son el único tipo.
+
+En esta guía exploraremos los microcontroladores: pequeñas unidades de procesamiento que seguramente ya tienes en casa sin saberlo. Es muy probable que tu lavadora, microondas o termostato estén controlados por uno. Sin embargo, esos dispositivos suelen ser cerrados: sus fabricantes dificultan o impiden que modifiques el software que ejecutan.
+
+\textbf{NOVA}, por otro lado, es diferente. Se puede reprogramar fácilmente todas las veces que quieras a través de una simple conexión USB. En las siguientes páginas veremos cómo empezar a utilizar este hardware y cómo combinarlo con otros componentes electrónicos.
+
+Lo que construyas con ellos depende totalmente de ti.
+
+Esta es la guia de \textbf{NOVA}. Esta documentación está diseñada para hobbistas, estudiantes y entusiastas que quieren entender \textbf{cómo funcionan las cosas} sin perderse en tecnicismos matemáticos complejos.
+
+Si tu objetivo es aprender electrónica programable, robótica básica y control de dispositivos, este es tu punto de partida.
+
+\newpage
+
+\section*{\textcolor{blue}{\shrikhand Contenidos}}
+
+\textcolor{red}{\textbf{Capítulo 1: Conoce tu NOVA}}\\
+Familiarízate con tu nuevo y potente microcontrolador, aprende cómo usar sus pines e instala MicroPython para programarlo.
+
+\textcolor{red}{\textbf{Capítulo 2: Programación con MicroPython}}\\
+Conecta una computadora y comienza a escribir programas para tu NOVA usando el lenguaje MicroPython.
+
+\textcolor{red}{\textbf{Capítulo 3: Computación Física}}\\
+Aprende sobre los pines de tu NOVA y los componentes electrónicos que puedes conectar y controlar.
+
+\textcolor{red}{\textbf{Capítulo 4: Computación Física con NOVA}}\\
+Empieza a conectar componentes electrónicos básicos a tu NOVA y escribe programas para controlarlos y detectar sus señales.
+
+\textcolor{red}{\textbf{Capítulo 5: Controlador de Semáforos}}\\
+Crea tu propio mini sistema de cruce peatonal usando múltiples LEDs y un botón pulsador.
+
+\textcolor{red}{\textbf{Capítulo 6: Juego de Reacción}}\\
+Construye un juego simple de tiempos de reacción usando un LED y botones, para uno o dos jugadores.
+
+\textcolor{red}{\textbf{Capítulo 7: Alarma Antirrobo}}\\
+Usa un sensor de movimiento para detectar intrusos y activa la alarma con una luz intermitente y una sirena.
+
+\textcolor{red}{\textbf{Capítulo 8: Medidor de Temperatura}}\\
+Usa el ADC integrado de NOVA para convertir entradas analógicas y lee su sensor de temperatura interno.
+
+\textcolor{red}{\textbf{Capítulo 9: Registrador de Datos (Data Logger)}}\\
+Convierte tu NOVA en un dispositivo de registro de temperatura y desconéctalo de la computadora para hacerlo totalmente portátil.
+
+\textcolor{red}{\textbf{Capítulo 10: Protocolos de Comunicación Digital: I2C y SPI}}\\
+Explora estos dos protocolos de comunicación populares y úsalos para mostrar datos en una pantalla LCD.
+
+\newpage
+
+\section{Conoce tu NOVA}
+
+NOVA es una herramienta potente. En su corazón late el \textbf{Raspberry Pi RP2350A}, un microcontrolador moderno.
+
+\subsection{¿Qué significa esto en la práctica?}
+\begin{itemize}
+    \item \textbf{Doble Núcleo (Dual Core):} Imagina que tienes dos cerebros. Mientras uno se encarga de mantener encendida una pantalla, el otro puede estar leyendo sensores o controlando un motor. Trabajan en paralelo (Multitasking real).
+    \item \textbf{Velocidad (150 MHz):} Puede procesar millones de instrucciones por segundo. Para proyectos de luces, robots y sensores, es increíblemente rápido.
+    \item \textbf{Pines de Propósito General (GPIO):} Son las "patitas" de la placa. A diferencia de un puerto USB normal de tu PC, estos pines se pueden programar para ser interruptores (encender/apagar cosas) o entradas (leer botones/sensores).
+\end{itemize}
+
+\subsection{Componentes principales de tu NOVA}
+
+Para dominar NOVA, primero debemos llamar a cada cosa por su nombre. Aquí tienes el "diccionario" de tu hardware:
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.85\textwidth]{assets/Componentes.png}
+    \caption{Mapa de componentes de NOVA}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Puerto USB-C (Energía y Datos):} Es el cordón umbilical de la placa. Por aquí recibe electricidad (5V) para funcionar y datos desde tu computadora cuando la programas.
+    
+    \item \textbf{Chip RP2350 (El Microcontrolador):} Es el "cerebro" real. Es el componente cuadrado y negro en el centro. Aquí es donde "vive" tu código y se toman las decisiones a 150 Mhz.
+    
+    \item \textbf{Memoria Flash (Almacenamiento):} Es como el disco duro de tu computadora, pero en miniatura. Aquí se guarda tu programa para que no se borre cuando desconectas la placa.
+    
+    \item \textbf{GPIOs (Pines de Entrada/Salida):} Esas "patitas" o agujeros dorados a los lados. Son las manos y ojos de NOVA. Puedes configurarlos para \textbf{leer} el mundo (sensores) o \textbf{actuar} sobre él (encender luces, mover motores).
+    
+    \item \textbf{Botón BOOT (Modo de carga):} Si lo mantienes presionado al conectar el USB, le dices a NOVA: "¡Alto! No ejecutes nada, voy a instalarte un nuevo sistema".
+    
+    \item \textbf{Botón RESET (Reinicio):} Es como desenchufar y volver a enchufar la placa, pero más rápido. Útil si tu programa se queda atascado.
+    
+    \item \textbf{LED de Usuario (Test):} Una pequeña luz integrada en la placa que tú puedes controlar. Es perfecta para realizar tus primeras pruebas sin conectar nada extra.
+\end{itemize}
+
+\clearpage
+\section{Programación con MicroPython}
+
+Para comunicarnos con NOVA, usaremos \textbf{MicroPython}.
+\begin{itemize}
+    \item \textbf{¿Qué es?} Es una versión de Python 3 optimizada para funcionar en microcontroladores. Es el lenguaje ideal para empezar porque es legible y potente.
+    \item \textbf{La Herramienta:} Usaremos \textbf{Thonny IDE}. Es un editor de código simple que ya trae todo lo necesario para hablar con tu placa.
+\end{itemize}
+
+\subsection{Pasos rápidos:}
+\begin{enumerate}
+    \item Conecta tu NOVA al ordenador manteniendo pulsado el botón \textbf{BOOT}.
+    \item Tu PC lo verá como una memoria USB.
+    \item Descarga la \textbf{última versión} del firmware \texttt{.uf2} para RP2350 desde \url{https://micropython.org/download/rp2-pico2/}. Copia o arrastra el archivo descargado en esa memoria. (La placa se reiniciará automáticamente, eso es normal).
+    \item Abre Thonny y configura el intérprete.
+    \begin{itemize}
+        \item \textbf{Ubicación:} Haz clic en el texto que aparece en la \textbf{esquina inferior derecha} de la ventana principal (o ve al menú \textit{Ejecutar} $\rightarrow$ \textit{Configurar intérprete}).
+        \item \textbf{Selección:} Elige la opción \textbf{"MicroPython (Raspberry Pi Pico)"}.
+        \item \textbf{¿Por qué este?} Aunque tu placa se llama NOVA, su cerebro (RP2350) pertenece a la familia RP2. Thonny necesita este controlador específico para poder comunicarse por USB, enviar tu código y mostrar los mensajes de la placa en la consola.
+    \end{itemize}
+
+    \vspace{0.2cm}
+    \makebox[\linewidth][c]{
+        \includegraphics[width=\textwidth]{assets/previews/thonny_hello_1.png}
+    }
+    \begin{center}
+        \vspace{-0.3cm}
+        \small{\textit{Interfaz de Thonny con el primer código}}
+    \end{center}
+\end{enumerate}
+
+\subsection{Tu primer programa: Hola Mundo (Blink)}
+En el mundo de la programación de software, lo primero que aprendemos es a imprimir un texto en pantalla. En el mundo de los microcontroladores, nuestro "Hola Mundo" es hacer parpadear un LED.
+
+Copia el siguiente código en el editor principal de Thonny:
+
+\begin{lstlisting}[language=Python]
+from machine import Pin
+import time
+
+# Configuramos el LED integrado (Pin 25)
+led = Pin(25, Pin.OUT)
+
+while True:
+    led.toggle()      # Cambia estado (ON/OFF)
+    print("Blink!")   # Mensaje en consola
+    time.sleep(1)     # Espera 1 segundo
+\end{lstlisting}
+
+\subsubsection{Explicación del código:}
+\begin{enumerate}
+    \item \textbf{Importar librerías:} \texttt{machine} nos da control sobre el hardware y \texttt{time} maneja el tiempo.
+    \item \textbf{Configuración:} Creamos un objeto \texttt{led} en el pin 25 y le indicamos que será de \textbf{SALIDA} (OUT), es decir, enviará voltaje.
+    \item \textbf{Bucle Infinito:} \texttt{while True:} crea un ciclo sin fin para que el programa nunca se detenga.
+    \item \textbf{Acción:} \texttt{.toggle()} invierte el estado actual del LED.
+\end{enumerate}
+
+Pulsa el botón \textbf{Ejecutar} (ícono de "Play" verde) en Thonny. ¡Verás el LED de tu NOVA parpadear!
+
+\vspace{1cm}
+
+\begin{center}
+    \textbf{\Large \textcolor{blue}{¡Felicidades!}}\\
+    \vspace{0.2cm}
+    Has logrado programar tu primer código y encender el LED correctamente. ¡Este es tu primer gran paso en el control de hardware!
+\end{center}
+
+\vspace{0.5cm}
+
+\textbf{Por cierto, ¿sabes lo que es hardware, firmware y software? ¿No? Bueno, te explico rápido:}
+
+Imagina que tu NOVA es un músico.
+\begin{itemize}
+    \item El \textbf{Hardware} es el instrumento (la guitarra, el piano). Es la parte física, lo que puedes tocar y, si se cae, se rompe.
+    \item El \textbf{Firmware} es el \textbf{traductor experto}. Tu placa solo entiende de electricidad (voltajes), y tú escribes palabras en inglés (Python). El firmware es el programa que vive en el chip y se encarga de traducir tus órdenes humanas a acciones eléctricas reales.
+    \item El \textbf{Software} es el \textbf{director de orquesta} (¡Ese eres tú!). Es el código lógico que escribes en Thonny para decidir cuándo y cómo debe sonar el instrumento. Sin tu software, el hardware está mudo y el firmware aburrido.
+\end{itemize}
+¡Tú acabas de componer tu primera obra!
+
+\newpage
+\section{Hardware y Conexiones}
+
+Aquí entramos en el mundo de la \textbf{Electrónica}: conectar el software con el mundo real. Hasta ahora, tu código vivía encerrado en el chip; ahora vamos a darle sentidos (sensores) y músculos (motores/luces).
+
+\subsection{El Mapa de tu NOVA (Pinout)}
+Para conectar componentes sin "quemar" nada, necesitas un mapa. A los pines metálicos los llamamos \textbf{GPIO} (\textit{General Purpose Input/Output}). NO todos son iguales, así que presta atención a este diagrama:
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{assets/pin out.png}
+    \caption{Diagrama de pines (Pinout) de NOVA RP2350}
+\end{figure}
+
+\subsection{Tipos de Pines y su función}
+\begin{itemize}
+    \item \textbf{GP0 - GP29 (Digitales):} Son los pines "normales". Solo entienden dos estados: \textbf{3.3V} (Encendido/1) y \textbf{0V} (Apagado/0).
+    \item \textbf{GND (Tierra/Masa):} ¡El más importante! Es el polo negativo. Todos los circuitos electrónicos deben conectarse a GND para cerrarse y funcionar. En NOVA, los verás marcados en negro o con formas cuadradas en el diagrama.
+    \item \textbf{3V3 (Energía):} Estos pines siempre entregan 3.3 voltios. Úsalos para "alimentar" sensores o componentes que necesiten energía constante.
+    \item \textbf{ADC (Analógicos):} Pines especiales (GP26, GP27, GP28) que pueden medir voltajes variables (como el volumen de una perilla o la intensidad de luz), no solo "todo o nada".
+\end{itemize}
+
+\subsection{Protocolos de Comunicación (Para el futuro)}
+Además de encender luces, algunos pines saben "hablar" idiomas complejos para conectarse con sensores avanzados o pantallas:
+\begin{itemize}
+    \item \textbf{I2C:} Usa 2 cables (SDA, SCL). Ideal para pantallas OLED y sensores de movimiento.
+    \item \textbf{UART:} Comunicación serie clásica. Útil para módulos GPS o Bluetooth.
+    \item \textbf{SPI:} Comunicación ultra-rápida. Usada en lectores de tarjetas SD o pantallas a color.
+\end{itemize}
+
+\newpage
+\section{Control Digital: Luces y Botones}
+
+En el capítulo anterior vimos el mapa. Ahora vamos a manejar el coche.
+Los pines GPIO digitales son la forma más básica de comunicación: solo entienden dos palabras: \textbf{ENCENDIDO (1/High)} y \textbf{APAGADO (0/Low)}.
+
+\subsection{Salidas Digitales (Escribir)}
+
+Cuando configuras un pin como \textbf{SALIDA (OUT)}, el microcontrolador "impone" un voltaje. Es como abrir o cerrar un grifo de agua.
+
+Vamos a controlar un LED externo. A nivel eléctrico, los LEDs son delicados; siempre necesitan una \textbf{resistencia de protección} (220$\Omega$ o 330$\Omega$) para no quemarse por exceso de corriente.
+
+\textbf{Circuito:}
+\begin{itemize}
+    \item \textbf{Pin 15} $\rightarrow$ Pata Larga del LED (+).
+    \item \textbf{GND} $\rightarrow$ Resistencia $\rightarrow$ Pata Corta del LED (-).
+\end{itemize}
+
+\textbf{Código Básico (Parpadeo):}
+\begin{lstlisting}[language=Python]
+from machine import Pin
+import time
+
+led = Pin(15, Pin.OUT) # Configuramos Pin 15 como SALIDA
+
+while True:
+    led.toggle()      # Cambia el estado (si estaba on, se apaga)
+    time.sleep(0.5)
+\end{lstlisting}
+
+\subsection{Proyecto: Ojos de Robot (Lógica)}
+
+Vamos a subir el nivel. Usaremos el módulo \texttt{random} y funciones de Python para dar "personalidad" a dos LEDs, simulando ojos que parpadean o escanean.
+
+\begin{lstlisting}[language=Python]
+from machine import Pin
+import time
+import random
+
+# Definimos los pines de los LEDs
+ojo_izq = Pin(15, Pin.OUT)
+ojo_der = Pin(14, Pin.OUT)
+
+def parpadeo_normal():
+    """Simula un parpadeo rapido simultaneo"""
+    ojo_izq.off()
+    ojo_der.off()
+    time.sleep(0.15)
+    ojo_izq.on()
+    ojo_der.on()
+
+def escaneo():
+    """Alterna luces como buscando algo"""
+    print("Escaneando entorno...")
+    for i in range(4):
+        ojo_izq.toggle()
+        time.sleep(0.08)
+        ojo_der.toggle()
+        time.sleep(0.08)
+    # Al finalizar, encendemos ambos
+    ojo_izq.on()
+    ojo_der.on()
+
+# --- Bucle Principal ---
+print("Sistema Iniciado. Ejecutando IA basica.")
+ojo_izq.on()
+ojo_der.on()
+
+while True:
+    # Espera aleatoria entre acciones (2 a 5 segundos)
+    time.sleep(random.uniform(2.0, 5.0))
+    
+    # 70% Probabilidad de parpadeo, 30% escaneo
+    if random.randint(1, 100) <= 70:
+        parpadeo_normal()
+    else:
+        escaneo()
+\end{lstlisting}
+
+\subsection{Entradas Digitales (Leer Botones)}
+Hasta ahora NOVA solo "hablaba". Ahora va a "escuchar".
+Para leer un botón, configuramos el pin como \textbf{ENTRADA (IN)}.
+
+Pero hay un problema: ¿Qué voltaje hay en el cable cuando el botón NO está presionado? ¿0V? ¿3.3V? La respuesta es radiación electromagnética aleatoria (ruido).
+Para evitar falsas lecturas, activamos una resistencia interna llamada \textbf{PULL\_DOWN}, que conecta el pin a tierra (0V) suavemente cuando nadie lo toca.
+
+\textbf{Reto:} Crea un interruptor de luz.
+\begin{lstlisting}[language=Python]
+from machine import Pin
+import time
+
+led = Pin(15, Pin.OUT)
+boton = Pin(16, Pin.IN, Pin.PULL_DOWN) # PULL_DOWN asegura 0V si no pulsas
+
+print("Listo para recibir ordenes...")
+
+while True:
+    estado = boton.value() # Leemos el estado (0 o 1)
+    
+    if estado == 1:
+        led.on()
+    else:
+        led.off()
+        
+    time.sleep(0.05) # Pequeña pausa para estabilidad
+\end{lstlisting}
+
+\subsection{Movimiento y PWM (Servomotores)}
+
+Un servomotor no funciona simplemente "encendiendo y apagando" la corriente. Necesita una \textbf{señal de control precisa} usando PWM (Pulse Width Modulation).
+
+\textbf{Código de Control de Servo:}
+
+\begin{lstlisting}[language=Python]
+from machine import Pin, PWM
+import time
+
+# Configuracion del PWM en el Pin 16
+# Los servos estandar funcionan a una frecuencia de 50Hz
+servo = PWM(Pin(16))
+servo.freq(50)
+
+def mover_servo(angulo):
+    """
+    Convierte un angulo (0-180) al ciclo de trabajo (duty) necesario.
+    """
+    # Mapeo simple: 0-180 -> duty_u16
+    duty = int(1638 + (angulo / 180) * (8192 - 1638))
+    servo.duty_u16(duty)
+
+while True:
+    print("Moviendo a 0 grados")
+    mover_servo(0)
+    time.sleep(1)
+    
+    print("Moviendo a 90 grados")
+    mover_servo(90)
+    time.sleep(1)
+    
+    print("Moviendo a 180 grados")
+    mover_servo(180)
+    time.sleep(1)
+\end{lstlisting}
+
+\hrulefill
+
+\textit{Nota: Los capítulos siguientes (5 al 10) están en desarrollo para futuras actualizaciones.}
+
+\section*{Recursos Adicionales}
+\addcontentsline{toc}{section}{Recursos Adicionales}
+
+\begin{itemize}
+    \item \textbf{Documentación Oficial MicroPython:} \href{https://docs.micropython.org}{docs.micropython.org}
+    \item \textbf{Datasheet RP2350:} Para cuando necesites los detalles técnicos profundos de los registros y memoria.
+    \item \textbf{Repositorio del Proyecto:} Ejemplos de código y librerías específicas para NOVA.
+\end{itemize}
+
+¡Bienvenido al nivel intermedio! Aquí es donde la creatividad se encuentra con la ingeniería.
+
+\end{document}
