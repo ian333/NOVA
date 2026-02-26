@@ -1,7 +1,7 @@
 ---
 pdf-engine: xelatex
 fontsize: 12pt
-geometry: "top=2cm, bottom=3.5cm, left=1.5cm, right=2.5cm, footskip=2cm"
+geometry: "top=2cm, bottom=4.2cm, left=1.5cm, right=2.5cm, footskip=2.8cm"
 header-includes:
   - "\\usepackage{fontspec}"
   - "\\setsansfont{DejaVu Sans}"
@@ -359,8 +359,8 @@ Un LDR (**Light Dependent Resistor**) cambia su resistencia según la cantidad d
 **Conexión (divisor de voltaje):**
 
 ```
-  3V3 ──── LDR ────┬──── Resistencia 10kΩ ──── GND
-                    │
+  3V3 ---- LDR ----+---- Resistencia 10k ---- GND
+                    |
                  GPIO26 (ADC0)
 ```
 
