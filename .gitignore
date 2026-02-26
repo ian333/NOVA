@@ -18,6 +18,16 @@ dist/
 build/
 eggs/
 
+# VS Code Server / Remote
+.vscode-server/
+.vscode-remote-containers/
+.copilot/
+
+# System / Shell
+.bash_history
+.cache/
+.landscape/
+
 # Temporary files
 test_upload.txt
 *.tmp.html
