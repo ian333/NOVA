@@ -266,15 +266,275 @@ Antes de trabajar con la NOVA_sense, ten en cuenta estas recomendaciones para ev
 
 # 5 Computación Física con NOVA_sense
 
-### 5.1 Lecturas analógicas (ADC)
+### 5.1 ¿Qué es una lectura analógica?
 
-Contenido sobre lecturas analógicas...
+En el mundo digital un pin solo puede estar **encendido** (1) o **apagado** (0). Una lectura analógica es diferente: mide un voltaje que puede tomar **cualquier valor entre 0 V y 3.3 V**, como el brillo variable de una lámpara con regulador. El componente que hace esta conversión dentro de la NOVA_pico se llama **ADC** (*Analog-to-Digital Converter*) — traduce un voltaje real a un número que tu programa puede usar.
 
-### 5.2 Uso de sensores comunes (temperatura, luz, movimiento)
+**¿Cuándo necesitas lecturas analógicas?**
+
+- Medir la **posición** de una perilla (potenciómetro).
+- Detectar **niveles de luz** con un LDR (fotoresistencia).
+- Leer la **temperatura** con un sensor analógico como el LM35 o TMP36.
+- Medir **voltajes de batería** o señales de sensores industriales.
+- Cualquier magnitud que varíe de forma continua (no solo encendido/apagado).
+
+### 5.2 Pines ADC de la NOVA_pico
+
+La NOVA_pico (basada en el RP2350A) tiene **4 canales ADC** accesibles y un canal interno:
+
+| Canal ADC | Pin GPIO | Función |
+|---|---|---|
+| `ADC0` | **GPIO26** | Entrada analógica de propósito general |
+| `ADC1` | **GPIO27** | Entrada analógica de propósito general |
+| `ADC2` | **GPIO28** | Entrada analógica de propósito general |
+| `ADC3` | **GPIO29** | Entrada analógica (también midiendo VSYS/3 en algunas placas) |
+| `ADC4` | — (interno) | Sensor de temperatura interno del chip |
+
+> **Importante:** los pines **GPIO26, GPIO27 y GPIO28** son los que usarás normalmente para conectar sensores analógicos. No confundas estos pines con los de I2C (GPIO20 SDA, GPIO21 SCL) que ya usas para la NOVA_sense.
+
+**Resolución:** el ADC del RP2350A es de **12 bits**, lo que significa que lee valores de 0 a 4095. Sin embargo, MicroPython los reporta como valores de **16 bits** (0 a 65535) con `read_u16()`, escalando internamente para mantener compatibilidad con otras placas.
+
+### 5.3 Tu primera lectura analógica — un potenciómetro
+
+Un potenciómetro (perilla giratoria) es el sensor analógico más sencillo: al girarlo, su voltaje de salida cambia suavemente de 0 V a 3.3 V.
+
+**Materiales:**
+
+- NOVA_pico
+- Potenciómetro de 10 kΩ (cualquier valor entre 1 kΩ y 100 kΩ sirve)
+- 3 cables dupont
+
+**Conexión:**
+
+| Pin del potenciómetro | Conectar a |
+|---|---|
+| Pata izquierda | **GND** de la NOVA_pico |
+| Pata central (wiper) | **GPIO26** (ADC0) |
+| Pata derecha | **3V3** de la NOVA_pico |
+
+**Código — leer el potenciómetro y mostrar en consola:**
+
+```python
+from machine import ADC, Pin
+import time
+
+# Crear el objeto ADC en GPIO26 (ADC0)
+pot = ADC(Pin(26))
+
+while True:
+    # Leer valor crudo (0 – 65535)
+    valor_crudo = pot.read_u16()
+
+    # Convertir a voltaje real (0.0 – 3.3 V)
+    voltaje = valor_crudo * 3.3 / 65535
+
+    # Convertir a porcentaje (0 – 100%)
+    porcentaje = valor_crudo * 100 / 65535
+
+    print(f"Crudo: {valor_crudo:5d}  |  Voltaje: {voltaje:.2f} V  |  Posición: {porcentaje:.1f}%")
+    time.sleep(0.3)
+```
+
+**¿Qué verás en Thonny?** Al ejecutar este script, la consola REPL mostrará algo así:
+
+```
+Crudo: 32750  |  Voltaje: 1.65 V  |  Posición: 50.0%
+Crudo:  1200  |  Voltaje: 0.06 V  |  Posición:  1.8%
+Crudo: 64800  |  Voltaje: 3.26 V  |  Posición: 98.9%
+```
+
+Gira la perilla y los valores cambian en tiempo real. Este mismo principio aplica a **cualquier sensor analógico**.
+
+### 5.4 Leer un sensor de luz (LDR / fotoresistencia)
+
+Un LDR (**Light Dependent Resistor**) cambia su resistencia según la cantidad de luz que recibe: mucha luz = baja resistencia, oscuridad = alta resistencia. Usamos un **divisor de voltaje** para convertir ese cambio de resistencia en un cambio de voltaje que el ADC pueda leer.
+
+**Materiales:**
+
+- NOVA_pico
+- LDR (fotoresistencia)
+- Resistencia de 10 kΩ
+- Cables dupont y protoboard
+
+**Conexión (divisor de voltaje):**
+
+```
+  3V3 ──── LDR ────┬──── Resistencia 10kΩ ──── GND
+                    │
+                 GPIO26 (ADC0)
+```
+
+La unión entre el LDR y la resistencia de 10 kΩ se conecta a **GPIO26**. Cuando hay mucha luz el LDR baja su resistencia y el voltaje en GPIO26 sube; en oscuridad el voltaje baja.
+
+**Código — detector de luz con umbral:**
+
+```python
+from machine import ADC, Pin
+import time
+
+ldr = ADC(Pin(26))
+
+# Umbral: ajústalo según tu ambiente
+UMBRAL_OSCURO = 20000   # por debajo de esto → "oscuro"
+UMBRAL_CLARO  = 45000   # por encima de esto → "muy iluminado"
+
+while True:
+    lectura = ldr.read_u16()
+
+    if lectura < UMBRAL_OSCURO:
+        estado = "Oscuro"
+    elif lectura > UMBRAL_CLARO:
+        estado = "Muy iluminado"
+    else:
+        estado = "Luz media"
+
+    print(f"ADC: {lectura:5d}  ->  {estado}")
+    time.sleep(0.5)
+```
+
+> **Tip:** los valores de umbral dependen de tu LDR y de la resistencia que uses. Ejecuta primero sin umbrales, observa los valores en Thonny, y luego ajusta los números.
+
+### 5.5 Leer temperatura con un sensor analógico (LM35 / TMP36)
+
+Los sensores LM35 y TMP36 generan un voltaje proporcional a la temperatura. La conversión es directa:
+
+| Sensor | Fórmula |
+|---|---|
+| **LM35** | Temperatura °C = voltaje × 100 (10 mV por °C) |
+| **TMP36** | Temperatura °C = (voltaje − 0.5) × 100 |
+
+**Conexión del LM35:**
+
+| Pin del LM35 | Conectar a |
+|---|---|
+| VCC | **3V3** de NOVA_pico |
+| VOUT (centro) | **GPIO26** (ADC0) |
+| GND | **GND** de NOVA_pico |
+
+**Código — termómetro digital:**
+
+```python
+from machine import ADC, Pin
+import time
+
+sensor_temp = ADC(Pin(26))
+
+while True:
+    adc_val = sensor_temp.read_u16()
+
+    # Convertir a voltaje
+    voltaje = adc_val * 3.3 / 65535
+
+    # Convertir a temperatura (fórmula LM35)
+    temp_c = voltaje * 100  # 10 mV/°C
+
+    print(f"Voltaje: {voltaje:.3f} V  ->  Temperatura: {temp_c:.1f} °C")
+    time.sleep(1)
+```
+
+**Salida esperada en Thonny:**
+
+```
+Voltaje: 0.230 V  ->  Temperatura: 23.0 °C
+Voltaje: 0.245 V  ->  Temperatura: 24.5 °C
+```
+
+### 5.6 Sensor de temperatura interno del RP2350A
+
+La NOVA_pico tiene un sensor de temperatura **integrado en el chip** (ADC canal 4), sin necesidad de hardware adicional. Es útil para monitorear si la placa se calienta demasiado:
+
+```python
+from machine import ADC
+import time
+
+temp_interna = ADC(4)  # Canal 4 = sensor interno
+
+while True:
+    lectura = temp_interna.read_u16()
+    # Fórmula del datasheet del RP2350
+    voltaje = lectura * 3.3 / 65535
+    temp_c = 27 - (voltaje - 0.706) / 0.001721
+
+    print(f"Temperatura del chip: {temp_c:.1f} °C")
+    time.sleep(2)
+```
+
+> Este sensor mide la temperatura del **chip**, no del ambiente. Es normal que marque unos grados más que la temperatura ambiental.
+
+### 5.7 Leer múltiples sensores analógicos al mismo tiempo
+
+Puedes conectar hasta 3 sensores analógicos simultáneamente usando los canales ADC0, ADC1 y ADC2:
+
+```python
+from machine import ADC, Pin
+import time
+
+pot   = ADC(Pin(26))  # ADC0 — potenciómetro
+ldr   = ADC(Pin(27))  # ADC1 — sensor de luz
+temp  = ADC(Pin(28))  # ADC2 — sensor de temperatura
+
+print("POT      | LUZ      | TEMP (°C)")
+print("-" * 35)
+
+while True:
+    v_pot  = pot.read_u16()
+    v_ldr  = ldr.read_u16()
+    v_temp = temp.read_u16()
+
+    # Convertir temperatura (LM35)
+    temp_c = (v_temp * 3.3 / 65535) * 100
+
+    print(f"{v_pot:5d}    | {v_ldr:5d}    | {temp_c:.1f}")
+    time.sleep(0.5)
+```
+
+### 5.8 Guardar lecturas analógicas en un archivo CSV
+
+Para analizar datos después (por ejemplo en una hoja de cálculo), puedes guardarlos en la memoria de la NOVA_pico:
+
+```python
+from machine import ADC, Pin
+import time
+
+adc = ADC(Pin(26))
+MUESTRAS = 200       # cantidad de lecturas
+INTERVALO = 0.1      # segundos entre cada lectura
+
+with open('lecturas_adc.csv', 'w') as f:
+    f.write('muestra,valor_crudo,voltaje\n')
+    for i in range(MUESTRAS):
+        val = adc.read_u16()
+        volt = val * 3.3 / 65535
+        f.write(f'{i},{val},{volt:.4f}\n')
+        time.sleep(INTERVALO)
+
+print(f'Listo: {MUESTRAS} muestras guardadas en lecturas_adc.csv')
+```
+
+Después puedes descargar el archivo desde Thonny (panel de archivos del dispositivo -> clic derecho -> *Descargar a...*) y abrirlo en Excel, Google Sheets o cualquier programa de hojas de cálculo para graficar los datos.
+
+### 5.9 Consejos para obtener lecturas estables
+
+- **Cables cortos**: los cables largos captan ruido eléctrico. Mantén las conexiones al ADC lo más cortas posible.
+- **Promedio de lecturas**: si los valores fluctúan, toma varias muestras y promédialas:
+
+```python
+def leer_promedio(adc, n=10):
+    suma = 0
+    for _ in range(n):
+        suma += adc.read_u16()
+    return suma // n
+```
+
+- **Condensador de filtro**: un condensador cerámico de 100 nF entre el pin ADC y GND reduce el ruido eléctrico significativamente.
+- **No mezclar señales ruidosas**: mantén los cables analógicos separados de motores o actuadores que generan interferencia.
+- **Alimentación estable**: usa la salida 3V3 de la NOVA_pico como referencia; voltajes inestables producen lecturas erróneas.
+
+### 5.10 Uso de sensores comunes (temperatura, luz, movimiento)
 
 Contenido sobre sensores comunes...
 
-### 5.3 Actuadores (motores, servos) y consideraciones de potencia
+### 5.11 Actuadores (motores, servos) y consideraciones de potencia
 
 Contenido sobre actuadores...
 
