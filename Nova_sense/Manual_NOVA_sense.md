@@ -335,6 +335,14 @@ print(f"LSM6DS3 WHO_AM_I: 0x{who:02X}")  # debe ser 0x69
 i2c.writeto_mem(LSM6DS3_ADDR, 0x10, bytes([0x40]))
 ```
 
+**Esto te debe aparecer en Thonny:**
+
+```
+LSM6DS3 WHO_AM_I: 0x69
+```
+
+> Si aparece `0x69`, tu NOVA_sense está conectada correctamente y el acelerómetro/giroscopio responde. Si aparece un error de tipo `OSError`, revisa los cables SDA, SCL y que la alimentación sea 3.3 V.
+
 **Lectura continua del acelerómetro:**
 
 ```python
@@ -352,14 +360,15 @@ while True:
     time.sleep(0.3)
 ```
 
-**Resultado esperado (placa horizontal sobre una mesa):**
+**Esto te debe aparecer en Thonny** (placa horizontal sobre una mesa):
 
 ```
 Acel:  X=+0.012g  Y=-0.008g  Z=+0.998g
 Acel:  X=+0.015g  Y=-0.005g  Z=+1.001g
+Acel:  X=+0.010g  Y=-0.006g  Z=+0.999g
 ```
 
-> **Interpretación:** X y Y cercanos a 0  indica que la placa está nivelada. Z cercano a 1g  confirma que la gravedad actúa sobre ese eje. Al inclinar la placa, los valores de X e Y cambian.
+> **Interpretación:** X y Y cercanos a 0 indica que la placa está nivelada. Z cercano a 1g confirma que la gravedad actúa sobre ese eje. Al inclinar la placa, los valores de X e Y cambian. Los datos se actualizan cada 0.3 segundos.
 
 ### 5.4 Leer el giroscopio (LSM6DS3)
 
@@ -383,13 +392,15 @@ while True:
     time.sleep(0.3)
 ```
 
-**Resultado esperado (placa quieta):**
+**Esto te debe aparecer en Thonny** (placa quieta sobre la mesa):
 
 ```
 Giro:  X=+0.18 °/s  Y=-0.09 °/s  Z=+0.04 °/s
+Giro:  X=-0.04 °/s  Y=+0.12 °/s  Z=-0.02 °/s
+Giro:  X=+0.09 °/s  Y=-0.07 °/s  Z=+0.01 °/s
 ```
 
-> Al girar la placa sobre la mesa (como una brújula), el eje Z muestra la velocidad de ese giro. Inclinarla hacia adelante afecta al eje X, y hacia un lado al eje Y.
+> Los valores deben estar cercanos a cero cuando la placa está quieta. Al girar la placa sobre la mesa (como una brújula), el eje Z muestra la velocidad de ese giro. Inclinarla hacia adelante afecta al eje X, y hacia un lado al eje Y.
 
 ### 5.5 Leer el magnetómetro / brújula (LIS2MDL)
 
@@ -428,14 +439,16 @@ while True:
     time.sleep(0.5)
 ```
 
-**Resultado esperado:**
+**Esto te debe aparecer en Thonny:**
 
 ```
+LIS2MDL WHO_AM_I: 0x40
 Mag: X=+20.3 uT  Y=-15.7 uT  Z=+42.1 uT  | Rumbo: 322°
-Mag: X=+25.1 uT  Y=+3.2 uT   Z=+41.8 uT  | Rumbo:  7°
+Mag: X=+25.1 uT  Y=+3.2 uT   Z=+41.8 uT  | Rumbo:   7°
+Mag: X=+22.8 uT  Y=+10.4 uT  Z=+41.5 uT  | Rumbo:  24°
 ```
 
-> El rumbo 0° = Norte, 90° = Este, 180° = Sur, 270° = Oeste. Gira la NOVA_sense horizontalmente y verás cómo cambia el ángulo.
+> Primero verás el WHO_AM_I (`0x40` confirma que el magnetómetro responde). Luego el rumbo: 0° = Norte, 90° = Este, 180° = Sur, 270° = Oeste. Gira la NOVA_sense horizontalmente y verás cómo cambia el ángulo en tiempo real.
 
 ### 5.6 Detectar inclinación con el acelerómetro
 
@@ -457,13 +470,15 @@ while True:
     time.sleep(0.3)
 ```
 
-**Resultado esperado (placa horizontal):**
+**Esto te debe aparecer en Thonny** (placa horizontal):
 
 ```
 Pitch: +0.7°  Roll: -0.5°
+Pitch: +0.5°  Roll: -0.3°
+Pitch: +0.8°  Roll: -0.6°
 ```
 
-Al inclinar la NOVA_sense hacia adelante, el pitch aumenta. Al inclinarla de lado, el roll cambia. Esto sirve para **nivelar plataformas**, **controlar movimiento** o **detectar caídas**.
+> Valores cercanos a 0° significan que la placa está nivelada. Al inclinar la NOVA_sense hacia adelante, el pitch aumenta. Al inclinarla de lado, el roll cambia. Esto sirve para **nivelar plataformas**, **controlar movimiento** o **detectar caídas**.
 
 ### 5.7 Detectar movimiento y golpes
 
@@ -492,7 +507,21 @@ while True:
     time.sleep(0.1)
 ```
 
-> **Aplicaciones:** alarma antirrobo (detectar que alguien mueve un objeto), podómetro (contar pasos), o protección de equipos frágiles.
+**Esto te debe aparecer en Thonny:**
+
+```
+Quieto
+Quieto
+Movimiento: 0.230g
+Movimiento: 0.185g
+Quieto
+*** GOLPE detectado: 3.45g ***
+Quieto
+```
+
+> Cuando la placa está quieta verás "Quieto". Al moverla suavemente aparece "Movimiento" con el valor en g. Un golpe fuerte (sacudida rápida) dispara la alerta de GOLPE. Ajusta los umbrales según tu proyecto.
+
+**Aplicaciones:** alarma antirrobo (detectar que alguien mueve un objeto), podómetro (contar pasos), o protección de equipos frágiles.
 
 ### 5.8 Ejemplo completo: leer los 9 ejes de la NOVA_sense
 
@@ -553,6 +582,19 @@ while True:
     time.sleep(0.5)
 ```
 
+**Esto te debe aparecer en Thonny:**
+
+```
+=== NOVA_sense - Lectura de 9 ejes ===
+Acel (g)          | Giro (°/s)          | Mag (uT)
+------------------------------------------------------------
++0.012 -0.008 +0.998 |   +0.2   -0.1   +0.0 |   +20   -16   +42  N:322°
++0.015 -0.005 +1.001 |   +0.1   +0.1   -0.0 |   +21   -15   +42  N:324°
++0.010 -0.007 +0.999 |   -0.0   +0.0   +0.1 |   +20   -16   +41  N:321°
+```
+
+> Verás las tres columnas actualizándose cada 0.5 segundos. La columna "N:" muestra el rumbo de la brújula. Al mover o girar la NOVA_sense, todos los valores cambian en tiempo real.
+
 ### 5.9 Guardar lecturas de la NOVA_sense en un archivo CSV
 
 Para registrar datos de movimiento y analizarlos después en una hoja de cálculo:
@@ -573,6 +615,15 @@ with open('nova_sense_log.csv', 'w') as f:
 print(f'Listo: {MUESTRAS} muestras guardadas en nova_sense_log.csv')
 print('Descárgalo desde Thonny: panel de archivos -> clic derecho -> Descargar')
 ```
+
+**Esto te debe aparecer en Thonny:**
+
+```
+Listo: 500 muestras guardadas en nova_sense_log.csv
+Descárgalo desde Thonny: panel de archivos -> clic derecho -> Descargar
+```
+
+> El script tarda aproximadamente 25 segundos (500 muestras x 0.05 s). Mientras se ejecuta no verás nada en la consola — al terminar aparece el mensaje de confirmación. El archivo `nova_sense_log.csv` aparecerá en el panel izquierdo de Thonny (archivos del dispositivo). Haz clic derecho sobre él y selecciona "Descargar a..." para guardarlo en tu computadora.
 
 ### 5.10 Calibración del magnetómetro
 
@@ -603,7 +654,28 @@ except KeyboardInterrupt:
     print(f"\nUsa: rumbo = atan2(my - {offset_y:.1f}, mx - {offset_x:.1f})")
 ```
 
-> Después de calibrar, resta los offsets en la función `calcular_rumbo()` para obtener un Norte más preciso.
+**Esto te debe aparecer en Thonny** (mientras giras la placa):
+
+```
+Gira la NOVA_sense lentamente en todas las direcciones...
+Presiona Ctrl+C cuando hayas completado varias rotaciones.
+
+X:[-45, 52]  Y:[-38, 47]
+X:[-45, 52]  Y:[-38, 48]
+X:[-46, 52]  Y:[-39, 48]
+```
+
+**Al presionar Ctrl+C:**
+
+```
+Offsets de calibración:
+  offset_x = 3.0
+  offset_y = 4.5
+
+Usa: rumbo = atan2(my - 4.5, mx - 3.0)
+```
+
+> Gira la NOVA_sense lentamente haciendo un "8" en el aire durante 15-20 segundos para capturar la mayor cantidad de direcciones. Después de calibrar, resta los offsets en la función `calcular_rumbo()` para obtener un Norte más preciso.
 
 ### 5.11 Consejos para lecturas estables de la NOVA_sense
 
