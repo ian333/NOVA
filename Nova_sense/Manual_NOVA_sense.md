@@ -1,37 +1,22 @@
 ---
 pdf-engine: xelatex
 fontsize: 12pt
-geometry: "top=2cm, bottom=4.2cm, left=1.5cm, right=2.5cm, footskip=2.8cm"
+geometry: margin=1.5cm
 header-includes:
   - "\\usepackage{fontspec}"
   - "\\setsansfont{DejaVu Sans}"
   - "\\renewcommand{\\familydefault}{\\sfdefault}"
   - "\\usepackage{microtype}"
   - "\\usepackage{graphicx}"
-  - "\\usepackage{xcolor}"
   - "\\usepackage{hyperref}"
-  - "\\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}"
+  - "\\hypersetup{colorlinks=true, linkcolor=blue}"
   - "\\usepackage{etoolbox}"
+  - "\\preto{\\section}{\\clearpage}"
   - "\\usepackage{fancyhdr}"
-  - "\\usepackage{tikz}"
-  - "\\usepackage{eso-pic}"
-  - "\\definecolor{cosmoBlue}{HTML}{0E47A1}"
-  - "\\definecolor{cosmoRed}{HTML}{C0392B}"
-  - "\\usepackage{titlesec}"
-  - "\\titleformat{\\section}{\\clearpage\\Large\\bfseries\\color{cosmoRed}}{\\thesection}{1em}{}"
-  - "\\titleformat{\\subsection}{\\large\\bfseries\\color{cosmoBlue}}{\\thesubsection}{1em}{}"
-  - "\\titleformat{\\subsubsection}{\\normalsize\\bfseries\\color{cosmoBlue}}{\\thesubsubsection}{1em}{}"
-  - "\\titlespacing*{\\section}{0pt}{1.5ex plus 1ex minus .2ex}{1ex plus .2ex}"
-  - "\\titlespacing*{\\subsection}{0pt}{1.2ex plus 0.8ex minus .2ex}{0.8ex plus .2ex}"
-  - "\\titlespacing*{\\subsubsection}{0pt}{1ex plus 0.6ex minus .2ex}{0.6ex plus .2ex}"
   - "\\pagestyle{fancy}"
   - "\\fancyhf{}"
+  - "\\cfoot{}"
   - "\\renewcommand{\\headrulewidth}{0pt}"
-  - "\\renewcommand{\\footrulewidth}{0pt}"
-  - "\\setlength{\\headheight}{2cm}"
-  - "\\fancyhead[R]{\\raisebox{-0.5\\height}{\\includegraphics[height=1.2cm]{Logotipo Cosmotools.jpeg}}\\hspace{-0.5cm}}"
-  - "\\AddToShipoutPictureBG{\\AtPageLowerLeft{\\makebox[\\paperwidth][c]{\\textcolor{cosmoBlue}{\\rule{\\paperwidth}{1.2cm}}}}}"
-  - "\\AddToShipoutPictureBG{\\AtPageLowerLeft{\\makebox[\\paperwidth][s]{\\hspace{1.5cm}\\raisebox{0.35cm}{\\textcolor{white}{\\small\\textbf{Manual NOVA\\_sense}}}\\hfill\\raisebox{0.35cm}{\\textcolor{white}{\\small\\thepage}}\\hspace{1.5cm}}}}"
 ---
 
 # Bienvenido a NOVA_sense
@@ -71,6 +56,8 @@ Piensa en ella como el **"cerebro sensorial"** de tu proyecto: tú le das las in
 
 En esta página se muestran los componentes principales del módulo NOVA_sense con su nombre común y una breve descripción para facilitar su identificación.
 
+![Componentes NOVA_sense](componentes%20NOVA_sense.png)
+
 ### 1.2 Componentes (nombre común — descripción)
 
 - **IMU (LSM6DS3)** — Acelerómetro y giroscopio integrados (6 ejes). Mide aceleración lineal y velocidad angular para detección de movimiento y fusión inercial.
@@ -83,61 +70,43 @@ En esta página se muestran los componentes principales del módulo NOVA_sense c
 
 - **Resistencias 10 kΩ** — Pull-ups/pull-downs para asegurar niveles lógicos estables en líneas digitales.
 
-\begin{center}
-\includegraphics[width=0.45\textwidth]{componentes NOVA_sense.png}
-\end{center}
-
 ### 1.3 Resumen funcional
 
 Todos estos componentes trabajan juntos para proporcionar el soporte necesario para integrarse fácilmente en proyectos de robótica, navegación y registradores de datos.
 
 # 2 Hardware y Conexiones
 
-Conectar la NOVA_sense es tan sencillo como conectar unos audífonos: solo necesitas **4 cables** entre tu **NOVA_pico** y la NOVA_sense. La NOVA_pico es un microcontrolador que también fabricamos nosotros, diseñado para trabajar en conjunto con la NOVA_sense. Este tipo de conexión se llama **I2C** (se pronuncia "ai-dos-cé") y es un estándar muy común en electrónica.
+NOVA_sense se comunica con cualquier microcontrolador (Arduino, Raspberry Pi Pico, ESP32, etc.) mediante **I2C**, un protocolo que solo necesita **4 cables**: alimentación (3.3 V), tierra (GND) y dos cables de datos (SDA y SCL). Si ya has conectado otro sensor I2C antes, NOVA_sense se conecta exactamente igual — pueden compartir los mismos cables.
 
-### 2.1 ¿Qué cables necesito?
+### 2.1 Conectar la NOVA_sense a cualquier microcontrolador
 
-| Cable | Nombre | ¿Qué hace? | Analogía |
-|---|---|---|---|
-| 1 | **3.3 V** | Alimenta la NOVA_sense con corriente | El polo **+** de una pila |
-| 2 | **GND** | Cierra el circuito (tierra) | El polo **−** de una pila |
-| 3 | **SDA** | Envía y recibe datos | El "hilo" por donde se mandan mensajes |
-| 4 | **SCL** | Marca el ritmo de la comunicación | El "reloj" que sincroniza la conversación |
+La NOVA_sense se comunica por I2C y necesita alimentación de 3.3 V. Aquí explicamos en términos simples cómo conectarla usando el microcontrolador que tengas (Arduino, Raspberry Pi Pico/NOVA_pico, ESP32, etc.) y qué herramientas puedes usar para programar y leer datos.
 
-### 2.2 Paso a paso para conectar
+**Conexiones eléctricas:**
 
-![Diagrama de conexión NOVA_pico — NOVA_sense](diagrama_conexion.png)
+- **Alimentación**: conecta `3V3` de tu microcontrolador al pin de `3.3V` de la NOVA_sense y conecta `GND` <-> `GND` (masa). Nunca alimentes la placa con 5V en los pines de señal.
+- **I2C (datos)**: conecta `SDA` <-> `SDA` y `SCL` <-> `SCL` entre tu microcontrolador y la NOVA_sense. Si tu placa tiene varios pines I2C, usa los que indique su documentación.
 
-1. Conecta **3.3 V** de tu **NOVA_pico** al pin **3.3 V** de la NOVA_sense.
-2. Conecta **GND** de tu **NOVA_pico** al pin **GND** de la NOVA_sense.
-3. Conecta **SDA** de tu **NOVA_pico** al pin **SDA** de la NOVA_sense.
-4. Conecta **SCL** de tu **NOVA_pico** al pin **SCL** de la NOVA_sense.
+**Notas de cableado:**
 
-> **Importante:** Nunca conectes 5 V a los pines de la NOVA_sense — solo usa 3.3 V.
+- Asegura GND común entre ambas placas.
+- Añade una resistencia de pull-up si tu bus I2C no las incluye (muchas placas ya las llevan integradas).
 
-\newpage
+### 2.2 Programas y entornos para escribir código
 
-**Consejos:**
+Puedes usar casi cualquier editor o IDE que soporten tu microcontrolador. Ejemplos comunes:
 
-- Asegúrate de que ambas placas compartan el mismo **GND**.
-- Si ya tienes otros sensores I2C conectados, la NOVA_sense puede compartir los mismos cables SDA y SCL — como enchufar varios aparatos a la misma regleta.
-- Muchas placas ya incluyen resistencias pull-up; si la tuya no las tiene, añade una de 4.7 kΩ en SDA y otra en SCL.
+Con estos programas podrás escribir código que use el bus I2C para leer registros del sensor y así obtener orientación o aceleración.
 
-### 2.3 Entorno de programación: Thonny
+![Diagrama de pines de la NOVA_sense](DIAGRAMA%20DE%20PINES.png)
 
-Para programar la NOVA_pico y leer los datos de la NOVA_sense se utiliza **Thonny**, el único entorno compatible con estas placas.
-
-> **¿Qué es Thonny?** Es un programa gratuito y sencillo que se instala en tu computadora. Desde ahí puedes escribir código en MicroPython, enviarlo a la NOVA_pico por USB y ver en tiempo real los datos que lee la NOVA_sense (orientación, movimiento, campo magnético).
->
-> **Descárgalo aquí:** \textcolor{blue}{\underline{\href{https://thonny.org}{https://thonny.org}}} — disponible para Windows, Mac y Linux.
-
-### 2.4 Leer registros y memoria del sensor (explicación simple)
+### 2.3 Leer registros y memoria del sensor (explicación simple)
 
 Lo habitual es leer registros del sensor por I2C: cada sensor tiene direcciones de registro (por ejemplo `WHO_AM_I`) que te permiten comprobar que el chip responde. Para obtener datos, lees los registros de salida y conviertes los bytes en valores utilizables (ver sección de programación).
 
-Para acceder a los archivos o programas guardados en la NOVA_pico, se utiliza exclusivamente **Thonny**, el entorno de programación oficial para estas placas. Desde **Thonny** puedes escribir código, subirlo a la NOVA_pico y ver los datos que lee la NOVA_sense — todo desde una sola ventana. No se modifica la memoria del sensor directamente; en su lugar se leen registros vía I2C.
+Si por "leer la memoria del NOVA_sense" te refieres a acceder a archivos o programas guardados en una placa que controle la NOVA_sense (por ejemplo la NOVA_pico), eso se hace desde el entorno de programación del microcontrolador (Thonny, gestor de archivos del IDE, o mediante conexión USB/serial). No se modifica la memoria del sensor directamente; en su lugar se leen registros vía I2C.
 
-### 2.5 La NOVA_pico como controlador
+### 2.4 La NOVA_pico como controlador
 
 La `NOVA_pico` es una placa compatible con RP2 que puede ejecutar MicroPython.
 
@@ -155,6 +124,7 @@ La `NOVA_pico` es una placa compatible con RP2 que puede ejecutar MicroPython.
 ### 3.1 Herramientas recomendadas
 
 - `Thonny`: recomendado para empezar con MicroPython; muestra la consola REPL y permite editar/guardar archivos en la placa fácilmente.
+- `rshell`/`ampy`/`mpremote`: herramientas para usuarios más avanzados.
 
 ### 3.2 Ver las lecturas en Thonny
 
@@ -262,439 +232,280 @@ Antes de trabajar con la NOVA_sense, ten en cuenta estas recomendaciones para ev
 - **Protección ESD**: manipula la placa en una superficie antiestática o descarga tu energía con una pulsera ESD si trabajas en un entorno sensible.
 
 - **Documenta cambios**: si modificas hardware (jumpers, resistencias), anota los cambios para reproducir pruebas y diagnóstico.
-- **Sin garantía por daño físico**: si la placa se quema por una conexión incorrecta o sobrevoltaje, no tiene garantía. Tendrás que reemplazarla por una nueva.
 
 # 5 Computación Física con NOVA_sense
 
-La NOVA_sense es una placa sensorial que integra tres sensores capaces de medir magnitudes físicas del mundo real: **aceleración**, **velocidad angular** (giros) y **campo magnético**. En esta sección aprenderás a leer cada uno de ellos, interpretar sus datos y usarlos en proyectos de computación física.
+### 5.1 ¿Qué es una lectura analógica?
 
-> **Recuerda:** la NOVA_sense no se programa directamente — se conecta por I2C a un microcontrolador (como la NOVA_pico, un Arduino o un ESP32) que lee sus registros y ejecuta tu código.
+En el mundo digital un pin solo puede estar **encendido** (1) o **apagado** (0). Una lectura analógica es diferente: mide un voltaje que puede tomar **cualquier valor entre 0 V y 3.3 V**, como el brillo variable de una lámpara con regulador. El componente que hace esta conversión dentro de la NOVA_pico se llama **ADC** (*Analog-to-Digital Converter*) — traduce un voltaje real a un número que tu programa puede usar.
 
-### 5.1 Los sensores de la NOVA_sense
+**¿Cuándo necesitas lecturas analógicas?**
 
-La NOVA_sense contiene dos chips que proporcionan tres tipos de medición:
+- Medir la **posición** de una perilla (potenciómetro).
+- Detectar **niveles de luz** con un LDR (fotoresistencia).
+- Leer la **temperatura** con un sensor analógico como el LM35 o TMP36.
+- Medir **voltajes de batería** o señales de sensores industriales.
+- Cualquier magnitud que varíe de forma continua (no solo encendido/apagado).
 
-| Chip | Sensor | ¿Qué mide? | Dirección I2C |
-|---|---|---|---|
-| **LSM6DS3** | Acelerómetro | Aceleración lineal en 3 ejes (X, Y, Z) | `0x6A` |
-| **LSM6DS3** | Giroscopio | Velocidad de rotación en 3 ejes | `0x6A` |
-| **LIS2MDL** | Magnetómetro | Campo magnético en 3 ejes (brújula) | `0x1E` |
+### 5.2 Pines ADC de la NOVA_pico
 
-Ambos chips se comunican por **I2C**, así que solo necesitas 4 cables (3V3, GND, SDA, SCL) para acceder a toda la información.
+La NOVA_pico (basada en el RP2350A) tiene **4 canales ADC** accesibles y un canal interno:
 
-### 5.2 Verificar que la NOVA_sense responde
+| Canal ADC | Pin GPIO | Función |
+|---|---|---|
+| `ADC0` | **GPIO26** | Entrada analógica de propósito general |
+| `ADC1` | **GPIO27** | Entrada analógica de propósito general |
+| `ADC2` | **GPIO28** | Entrada analógica de propósito general |
+| `ADC3` | **GPIO29** | Entrada analógica (también midiendo VSYS/3 en algunas placas) |
+| `ADC4` | — (interno) | Sensor de temperatura interno del chip |
 
-Antes de leer datos, confirma que tu microcontrolador detecta la NOVA_sense en el bus I2C:
+> **Importante:** los pines **GPIO26, GPIO27 y GPIO28** son los que usarás normalmente para conectar sensores analógicos. No confundas estos pines con los de I2C (GPIO20 SDA, GPIO21 SCL) que ya usas para la NOVA_sense.
 
-```python
-from machine import I2C, Pin
+**Resolución:** el ADC del RP2350A es de **12 bits**, lo que significa que lee valores de 0 a 4095. Sin embargo, MicroPython los reporta como valores de **16 bits** (0 a 65535) con `read_u16()`, escalando internamente para mantener compatibilidad con otras placas.
 
-i2c = I2C(0, scl=Pin(21), sda=Pin(20))
+### 5.3 Tu primera lectura analógica — un potenciómetro
 
-print("Dispositivos I2C encontrados:")
-for addr in i2c.scan():
-    print(f"  -> 0x{addr:02X}", end="")
-    if addr == 0x6A:
-        print("  (LSM6DS3 - acelerómetro/giroscopio)")
-    elif addr == 0x1E:
-        print("  (LIS2MDL - magnetómetro)")
-    else:
-        print()
-```
+Un potenciómetro (perilla giratoria) es el sensor analógico más sencillo: al girarlo, su voltaje de salida cambia suavemente de 0 V a 3.3 V.
 
-**Resultado esperado:**
+**Materiales:**
 
-```
-Dispositivos I2C encontrados:
-  -> 0x1E  (LIS2MDL - magnetómetro)
-  -> 0x6A  (LSM6DS3 - acelerómetro/giroscopio)
-```
+- NOVA_pico
+- Potenciómetro de 10 kΩ (cualquier valor entre 1 kΩ y 100 kΩ sirve)
+- 3 cables dupont
 
-Si no aparecen, revisa las conexiones SDA, SCL, 3V3 y GND.
+**Conexión:**
 
-### 5.3 Leer el acelerómetro (LSM6DS3)
+| Pin del potenciómetro | Conectar a |
+|---|---|
+| Pata izquierda | **GND** de la NOVA_pico |
+| Pata central (wiper) | **GPIO26** (ADC0) |
+| Pata derecha | **3V3** de la NOVA_pico |
 
-El acelerómetro mide la **aceleración** en tres ejes. Cuando la placa está quieta sobre una mesa, el eje Z marca aproximadamente **1g** (9.8 m/s²) por la gravedad terrestre.
-
-**Configuración e inicialización:**
+**Código — leer el potenciómetro y mostrar en consola:**
 
 ```python
-from machine import I2C, Pin
-import struct
+from machine import ADC, Pin
 import time
 
-i2c = I2C(0, scl=Pin(21), sda=Pin(20))
-
-LSM6DS3_ADDR = 0x6A
-
-# Registro WHO_AM_I para verificar identidad
-who = i2c.readfrom_mem(LSM6DS3_ADDR, 0x0F, 1)[0]
-print(f"LSM6DS3 WHO_AM_I: 0x{who:02X}")  # debe ser 0x69
-
-# Activar acelerómetro: 104 Hz, +/- 2g
-i2c.writeto_mem(LSM6DS3_ADDR, 0x10, bytes([0x40]))
-```
-
-**Esto te debe aparecer en Thonny:**
-
-```
-LSM6DS3 WHO_AM_I: 0x69
-```
-
-> Si aparece `0x69`, tu NOVA_sense está conectada correctamente y el acelerómetro/giroscopio responde. Si aparece un error de tipo `OSError`, revisa los cables SDA, SCL y que la alimentación sea 3.3 V.
-
-**Lectura continua del acelerómetro:**
-
-```python
-def leer_acelerometro():
-    raw = i2c.readfrom_mem(LSM6DS3_ADDR, 0x28, 6)
-    ax = struct.unpack('<h', raw[0:2])[0]
-    ay = struct.unpack('<h', raw[2:4])[0]
-    az = struct.unpack('<h', raw[4:6])[0]
-    # Convertir a g (escala +/- 2g: 0.061 mg/LSB)
-    return ax * 0.000061, ay * 0.000061, az * 0.000061
+# Crear el objeto ADC en GPIO26 (ADC0)
+pot = ADC(Pin(26))
 
 while True:
-    x, y, z = leer_acelerometro()
-    print(f"Acel:  X={x:+.3f}g  Y={y:+.3f}g  Z={z:+.3f}g")
+    # Leer valor crudo (0 – 65535)
+    valor_crudo = pot.read_u16()
+
+    # Convertir a voltaje real (0.0 – 3.3 V)
+    voltaje = valor_crudo * 3.3 / 65535
+
+    # Convertir a porcentaje (0 – 100%)
+    porcentaje = valor_crudo * 100 / 65535
+
+    print(f"Crudo: {valor_crudo:5d}  |  Voltaje: {voltaje:.2f} V  |  Posición: {porcentaje:.1f}%")
     time.sleep(0.3)
 ```
 
-**Esto te debe aparecer en Thonny** (placa horizontal sobre una mesa):
+**¿Qué verás en Thonny?** Al ejecutar este script, la consola REPL mostrará algo así:
 
 ```
-Acel:  X=+0.012g  Y=-0.008g  Z=+0.998g
-Acel:  X=+0.015g  Y=-0.005g  Z=+1.001g
-Acel:  X=+0.010g  Y=-0.006g  Z=+0.999g
+Crudo: 32750  |  Voltaje: 1.65 V  |  Posición: 50.0%
+Crudo:  1200  |  Voltaje: 0.06 V  |  Posición:  1.8%
+Crudo: 64800  |  Voltaje: 3.26 V  |  Posición: 98.9%
 ```
 
-> **Interpretación:** X y Y cercanos a 0 indica que la placa está nivelada. Z cercano a 1g confirma que la gravedad actúa sobre ese eje. Al inclinar la placa, los valores de X e Y cambian. Los datos se actualizan cada 0.3 segundos.
+Gira la perilla y los valores cambian en tiempo real. Este mismo principio aplica a **cualquier sensor analógico**.
 
-### 5.4 Leer el giroscopio (LSM6DS3)
+### 5.4 Leer un sensor de luz (LDR / fotoresistencia)
 
-El giroscopio mide la **velocidad de rotación** (en grados por segundo, °/s). Cuando la placa está quieta, los tres ejes deben marcar valores cercanos a cero.
+Un LDR (**Light Dependent Resistor**) cambia su resistencia según la cantidad de luz que recibe: mucha luz = baja resistencia, oscuridad = alta resistencia. Usamos un **divisor de voltaje** para convertir ese cambio de resistencia en un cambio de voltaje que el ADC pueda leer.
+
+**Materiales:**
+
+- NOVA_pico
+- LDR (fotoresistencia)
+- Resistencia de 10 kΩ
+- Cables dupont y protoboard
+
+**Conexión (divisor de voltaje):**
+
+```
+  3V3 ──── LDR ────┬──── Resistencia 10kΩ ──── GND
+                    │
+                 GPIO26 (ADC0)
+```
+
+La unión entre el LDR y la resistencia de 10 kΩ se conecta a **GPIO26**. Cuando hay mucha luz el LDR baja su resistencia y el voltaje en GPIO26 sube; en oscuridad el voltaje baja.
+
+**Código — detector de luz con umbral:**
 
 ```python
-# Activar giroscopio: 104 Hz, 245 °/s
-i2c.writeto_mem(LSM6DS3_ADDR, 0x11, bytes([0x40]))
+from machine import ADC, Pin
+import time
 
-def leer_giroscopio():
-    raw = i2c.readfrom_mem(LSM6DS3_ADDR, 0x22, 6)
-    gx = struct.unpack('<h', raw[0:2])[0]
-    gy = struct.unpack('<h', raw[2:4])[0]
-    gz = struct.unpack('<h', raw[4:6])[0]
-    # Convertir a °/s (escala 245 °/s: 8.75 mdps/LSB)
-    return gx * 0.00875, gy * 0.00875, gz * 0.00875
+ldr = ADC(Pin(26))
+
+# Umbral: ajústalo según tu ambiente
+UMBRAL_OSCURO = 20000   # por debajo de esto → "oscuro"
+UMBRAL_CLARO  = 45000   # por encima de esto → "muy iluminado"
 
 while True:
-    x, y, z = leer_giroscopio()
-    print(f"Giro:  X={x:+.2f} °/s  Y={y:+.2f} °/s  Z={z:+.2f} °/s")
-    time.sleep(0.3)
-```
+    lectura = ldr.read_u16()
 
-**Esto te debe aparecer en Thonny** (placa quieta sobre la mesa):
+    if lectura < UMBRAL_OSCURO:
+        estado = "🌙 Oscuro"
+    elif lectura > UMBRAL_CLARO:
+        estado = "☀️ Muy iluminado"
+    else:
+        estado = "🌤️ Luz media"
 
-```
-Giro:  X=+0.18 °/s  Y=-0.09 °/s  Z=+0.04 °/s
-Giro:  X=-0.04 °/s  Y=+0.12 °/s  Z=-0.02 °/s
-Giro:  X=+0.09 °/s  Y=-0.07 °/s  Z=+0.01 °/s
-```
-
-> Los valores deben estar cercanos a cero cuando la placa está quieta. Al girar la placa sobre la mesa (como una brújula), el eje Z muestra la velocidad de ese giro. Inclinarla hacia adelante afecta al eje X, y hacia un lado al eje Y.
-
-### 5.5 Leer el magnetómetro / brújula (LIS2MDL)
-
-El magnetómetro mide el **campo magnético** terrestre en tres ejes, lo que permite construir una **brújula digital** que indica el Norte.
-
-```python
-LIS2MDL_ADDR = 0x1E
-
-# Verificar identidad
-who = i2c.readfrom_mem(LIS2MDL_ADDR, 0x4F, 1)[0]
-print(f"LIS2MDL WHO_AM_I: 0x{who:02X}")  # debe ser 0x40
-
-# Activar: modo continuo, 50 Hz
-i2c.writeto_mem(LIS2MDL_ADDR, 0x60, bytes([0x00]))
-
-import math
-
-def leer_magnetometro():
-    raw = i2c.readfrom_mem(LIS2MDL_ADDR, 0x68, 6)
-    mx = struct.unpack('<h', raw[0:2])[0]
-    my = struct.unpack('<h', raw[2:4])[0]
-    mz = struct.unpack('<h', raw[4:6])[0]
-    # Convertir a microteslas (1.5 mgauss/LSB = 0.15 uT/LSB)
-    return mx * 0.15, my * 0.15, mz * 0.15
-
-def calcular_rumbo(mx, my):
-    angulo = math.atan2(my, mx) * 180 / math.pi
-    if angulo < 0:
-        angulo += 360
-    return angulo
-
-while True:
-    mx, my, mz = leer_magnetometro()
-    rumbo = calcular_rumbo(mx, my)
-    print(f"Mag: X={mx:+.1f} uT  Y={my:+.1f} uT  Z={mz:+.1f} uT  | Rumbo: {rumbo:.0f}°")
+    print(f"ADC: {lectura:5d}  →  {estado}")
     time.sleep(0.5)
 ```
 
-**Esto te debe aparecer en Thonny:**
+> **Tip:** los valores de umbral dependen de tu LDR y de la resistencia que uses. Ejecuta primero sin umbrales, observa los valores en Thonny, y luego ajusta los números.
 
-```
-LIS2MDL WHO_AM_I: 0x40
-Mag: X=+20.3 uT  Y=-15.7 uT  Z=+42.1 uT  | Rumbo: 322°
-Mag: X=+25.1 uT  Y=+3.2 uT   Z=+41.8 uT  | Rumbo:   7°
-Mag: X=+22.8 uT  Y=+10.4 uT  Z=+41.5 uT  | Rumbo:  24°
-```
+### 5.5 Leer temperatura con un sensor analógico (LM35 / TMP36)
 
-> Primero verás el WHO_AM_I (`0x40` confirma que el magnetómetro responde). Luego el rumbo: 0° = Norte, 90° = Este, 180° = Sur, 270° = Oeste. Gira la NOVA_sense horizontalmente y verás cómo cambia el ángulo en tiempo real.
+Los sensores LM35 y TMP36 generan un voltaje proporcional a la temperatura. La conversión es directa:
 
-### 5.6 Detectar inclinación con el acelerómetro
+| Sensor | Fórmula |
+|---|---|
+| **LM35** | Temperatura °C = voltaje × 100 (10 mV por °C) |
+| **TMP36** | Temperatura °C = (voltaje − 0.5) × 100 |
 
-El acelerómetro puede calcular el **ángulo de inclinación** de la NOVA_sense respecto a la horizontal, usando la componente de gravedad en cada eje:
+**Conexión del LM35:**
 
-```python
-import math
+| Pin del LM35 | Conectar a |
+|---|---|
+| VCC | **3V3** de NOVA_pico |
+| VOUT (centro) | **GPIO26** (ADC0) |
+| GND | **GND** de NOVA_pico |
 
-def calcular_inclinacion(ax, ay, az):
-    # Ángulo en grados respecto a horizontal
-    pitch = math.atan2(ax, math.sqrt(ay**2 + az**2)) * 180 / math.pi
-    roll  = math.atan2(ay, math.sqrt(ax**2 + az**2)) * 180 / math.pi
-    return pitch, roll
-
-while True:
-    ax, ay, az = leer_acelerometro()
-    pitch, roll = calcular_inclinacion(ax, ay, az)
-    print(f"Pitch: {pitch:+.1f}°  Roll: {roll:+.1f}°")
-    time.sleep(0.3)
-```
-
-**Esto te debe aparecer en Thonny** (placa horizontal):
-
-```
-Pitch: +0.7°  Roll: -0.5°
-Pitch: +0.5°  Roll: -0.3°
-Pitch: +0.8°  Roll: -0.6°
-```
-
-> Valores cercanos a 0° significan que la placa está nivelada. Al inclinar la NOVA_sense hacia adelante, el pitch aumenta. Al inclinarla de lado, el roll cambia. Esto sirve para **nivelar plataformas**, **controlar movimiento** o **detectar caídas**.
-
-### 5.7 Detectar movimiento y golpes
-
-El acelerómetro puede detectar si la NOVA_sense **se está moviendo, agitando o recibiendo un golpe**:
+**Código — termómetro digital:**
 
 ```python
-UMBRAL_MOVIMIENTO = 0.15  # en g (ajustar según necesidad)
-UMBRAL_GOLPE = 2.0        # en g
-
-while True:
-    ax, ay, az = leer_acelerometro()
-
-    # Magnitud total de aceleración
-    magnitud = math.sqrt(ax**2 + ay**2 + az**2)
-
-    # Restar gravedad (1g) para ver solo el movimiento
-    movimiento = abs(magnitud - 1.0)
-
-    if movimiento > UMBRAL_GOLPE:
-        print(f"*** GOLPE detectado: {magnitud:.2f}g ***")
-    elif movimiento > UMBRAL_MOVIMIENTO:
-        print(f"Movimiento: {movimiento:.3f}g")
-    else:
-        print("Quieto")
-
-    time.sleep(0.1)
-```
-
-**Esto te debe aparecer en Thonny:**
-
-```
-Quieto
-Quieto
-Movimiento: 0.230g
-Movimiento: 0.185g
-Quieto
-*** GOLPE detectado: 3.45g ***
-Quieto
-```
-
-> Cuando la placa está quieta verás "Quieto". Al moverla suavemente aparece "Movimiento" con el valor en g. Un golpe fuerte (sacudida rápida) dispara la alerta de GOLPE. Ajusta los umbrales según tu proyecto.
-
-**Aplicaciones:** alarma antirrobo (detectar que alguien mueve un objeto), podómetro (contar pasos), o protección de equipos frágiles.
-
-### 5.8 Ejemplo completo: leer los 9 ejes de la NOVA_sense
-
-Este script lee simultáneamente los tres sensores (acelerómetro + giroscopio + magnetómetro = 9 ejes) y muestra todo en la consola:
-
-```python
-from machine import I2C, Pin
-import struct
-import math
+from machine import ADC, Pin
 import time
 
-i2c = I2C(0, scl=Pin(21), sda=Pin(20))
-
-LSM6DS3 = 0x6A
-LIS2MDL = 0x1E
-
-# Inicializar LSM6DS3 (accel 104Hz +/-2g, gyro 104Hz 245°/s)
-i2c.writeto_mem(LSM6DS3, 0x10, bytes([0x40]))
-i2c.writeto_mem(LSM6DS3, 0x11, bytes([0x40]))
-
-# Inicializar LIS2MDL (modo continuo)
-i2c.writeto_mem(LIS2MDL, 0x60, bytes([0x00]))
-
-time.sleep(0.1)
-
-def leer_9_ejes():
-    # Acelerómetro
-    raw_a = i2c.readfrom_mem(LSM6DS3, 0x28, 6)
-    ax = struct.unpack('<h', raw_a[0:2])[0] * 0.000061
-    ay = struct.unpack('<h', raw_a[2:4])[0] * 0.000061
-    az = struct.unpack('<h', raw_a[4:6])[0] * 0.000061
-
-    # Giroscopio
-    raw_g = i2c.readfrom_mem(LSM6DS3, 0x22, 6)
-    gx = struct.unpack('<h', raw_g[0:2])[0] * 0.00875
-    gy = struct.unpack('<h', raw_g[2:4])[0] * 0.00875
-    gz = struct.unpack('<h', raw_g[4:6])[0] * 0.00875
-
-    # Magnetómetro
-    raw_m = i2c.readfrom_mem(LIS2MDL, 0x68, 6)
-    mx = struct.unpack('<h', raw_m[0:2])[0] * 0.15
-    my = struct.unpack('<h', raw_m[2:4])[0] * 0.15
-    mz = struct.unpack('<h', raw_m[4:6])[0] * 0.15
-
-    return ax, ay, az, gx, gy, gz, mx, my, mz
-
-print("=== NOVA_sense - Lectura de 9 ejes ===")
-print("Acel (g)          | Giro (°/s)          | Mag (uT)")
-print("-" * 60)
+sensor_temp = ADC(Pin(26))
 
 while True:
-    ax, ay, az, gx, gy, gz, mx, my, mz = leer_9_ejes()
-    rumbo = (math.atan2(my, mx) * 180 / math.pi) % 360
+    adc_val = sensor_temp.read_u16()
 
-    print(f"{ax:+.3f} {ay:+.3f} {az:+.3f} | "
-          f"{gx:+6.1f} {gy:+6.1f} {gz:+6.1f} | "
-          f"{mx:+6.0f} {my:+6.0f} {mz:+6.0f}  N:{rumbo:.0f}°")
+    # Convertir a voltaje
+    voltaje = adc_val * 3.3 / 65535
+
+    # Convertir a temperatura (fórmula LM35)
+    temp_c = voltaje * 100  # 10 mV/°C
+
+    print(f"Voltaje: {voltaje:.3f} V  →  Temperatura: {temp_c:.1f} °C")
+    time.sleep(1)
+```
+
+**Salida esperada en Thonny:**
+
+```
+Voltaje: 0.230 V  →  Temperatura: 23.0 °C
+Voltaje: 0.245 V  →  Temperatura: 24.5 °C
+```
+
+### 5.6 Sensor de temperatura interno del RP2350A
+
+La NOVA_pico tiene un sensor de temperatura **integrado en el chip** (ADC canal 4), sin necesidad de hardware adicional. Es útil para monitorear si la placa se calienta demasiado:
+
+```python
+from machine import ADC
+import time
+
+temp_interna = ADC(4)  # Canal 4 = sensor interno
+
+while True:
+    lectura = temp_interna.read_u16()
+    # Fórmula del datasheet del RP2350
+    voltaje = lectura * 3.3 / 65535
+    temp_c = 27 - (voltaje - 0.706) / 0.001721
+
+    print(f"Temperatura del chip: {temp_c:.1f} °C")
+    time.sleep(2)
+```
+
+> Este sensor mide la temperatura del **chip**, no del ambiente. Es normal que marque unos grados más que la temperatura ambiental.
+
+### 5.7 Leer múltiples sensores analógicos al mismo tiempo
+
+Puedes conectar hasta 3 sensores analógicos simultáneamente usando los canales ADC0, ADC1 y ADC2:
+
+```python
+from machine import ADC, Pin
+import time
+
+pot   = ADC(Pin(26))  # ADC0 — potenciómetro
+ldr   = ADC(Pin(27))  # ADC1 — sensor de luz
+temp  = ADC(Pin(28))  # ADC2 — sensor de temperatura
+
+print("POT      | LUZ      | TEMP (°C)")
+print("-" * 35)
+
+while True:
+    v_pot  = pot.read_u16()
+    v_ldr  = ldr.read_u16()
+    v_temp = temp.read_u16()
+
+    # Convertir temperatura (LM35)
+    temp_c = (v_temp * 3.3 / 65535) * 100
+
+    print(f"{v_pot:5d}    | {v_ldr:5d}    | {temp_c:.1f}")
     time.sleep(0.5)
 ```
 
-**Esto te debe aparecer en Thonny:**
+### 5.8 Guardar lecturas analógicas en un archivo CSV
 
-```
-=== NOVA_sense - Lectura de 9 ejes ===
-Acel (g)          | Giro (°/s)          | Mag (uT)
-------------------------------------------------------------
-+0.012 -0.008 +0.998 |   +0.2   -0.1   +0.0 |   +20   -16   +42  N:322°
-+0.015 -0.005 +1.001 |   +0.1   +0.1   -0.0 |   +21   -15   +42  N:324°
-+0.010 -0.007 +0.999 |   -0.0   +0.0   +0.1 |   +20   -16   +41  N:321°
-```
-
-> Verás las tres columnas actualizándose cada 0.5 segundos. La columna "N:" muestra el rumbo de la brújula. Al mover o girar la NOVA_sense, todos los valores cambian en tiempo real.
-
-### 5.9 Guardar lecturas de la NOVA_sense en un archivo CSV
-
-Para registrar datos de movimiento y analizarlos después en una hoja de cálculo:
+Para analizar datos después (por ejemplo en una hoja de cálculo), puedes guardarlos en la memoria de la NOVA_pico:
 
 ```python
-MUESTRAS = 500
-INTERVALO = 0.05  # 50 ms = 20 muestras/segundo
+from machine import ADC, Pin
+import time
 
-with open('nova_sense_log.csv', 'w') as f:
-    f.write('t,ax,ay,az,gx,gy,gz,mx,my,mz\n')
-    for t in range(MUESTRAS):
-        ax, ay, az, gx, gy, gz, mx, my, mz = leer_9_ejes()
-        f.write(f'{t*INTERVALO:.3f},{ax:.4f},{ay:.4f},{az:.4f},'
-                f'{gx:.2f},{gy:.2f},{gz:.2f},'
-                f'{mx:.1f},{my:.1f},{mz:.1f}\n')
+adc = ADC(Pin(26))
+MUESTRAS = 200       # cantidad de lecturas
+INTERVALO = 0.1      # segundos entre cada lectura
+
+with open('lecturas_adc.csv', 'w') as f:
+    f.write('muestra,valor_crudo,voltaje\n')
+    for i in range(MUESTRAS):
+        val = adc.read_u16()
+        volt = val * 3.3 / 65535
+        f.write(f'{i},{val},{volt:.4f}\n')
         time.sleep(INTERVALO)
 
-print(f'Listo: {MUESTRAS} muestras guardadas en nova_sense_log.csv')
-print('Descárgalo desde Thonny: panel de archivos -> clic derecho -> Descargar')
+print(f'Listo: {MUESTRAS} muestras guardadas en lecturas_adc.csv')
 ```
 
-**Esto te debe aparecer en Thonny:**
+Después puedes descargar el archivo desde Thonny (panel de archivos del dispositivo → clic derecho → *Descargar a…*) y abrirlo en Excel, Google Sheets o cualquier programa de hojas de cálculo para graficar los datos.
 
-```
-Listo: 500 muestras guardadas en nova_sense_log.csv
-Descárgalo desde Thonny: panel de archivos -> clic derecho -> Descargar
-```
+### 5.9 Consejos para obtener lecturas estables
 
-> El script tarda aproximadamente 25 segundos (500 muestras x 0.05 s). Mientras se ejecuta no verás nada en la consola — al terminar aparece el mensaje de confirmación. El archivo `nova_sense_log.csv` aparecerá en el panel izquierdo de Thonny (archivos del dispositivo). Haz clic derecho sobre él y selecciona "Descargar a..." para guardarlo en tu computadora.
-
-### 5.10 Calibración del magnetómetro
-
-Para obtener lecturas de brújula precisas, el magnetómetro necesita **calibración**. Objetos metálicos o corrientes cercanas distorsionan las lecturas (esto se llama *hard iron offset*). El procedimiento es sencillo:
+- **Cables cortos**: los cables largos captan ruido eléctrico. Mantén las conexiones al ADC lo más cortas posible.
+- **Promedio de lecturas**: si los valores fluctúan, toma varias muestras y promédialas:
 
 ```python
-print("Gira la NOVA_sense lentamente en todas las direcciones...")
-print("Presiona Ctrl+C cuando hayas completado varias rotaciones.\n")
-
-min_x, max_x = 99999, -99999
-min_y, max_y = 99999, -99999
-
-try:
-    while True:
-        mx, my, mz = leer_magnetometro()
-        if mx < min_x: min_x = mx
-        if mx > max_x: max_x = mx
-        if my < min_y: min_y = my
-        if my > max_y: max_y = my
-        print(f"X:[{min_x:.0f}, {max_x:.0f}]  Y:[{min_y:.0f}, {max_y:.0f}]")
-        time.sleep(0.1)
-except KeyboardInterrupt:
-    offset_x = (max_x + min_x) / 2
-    offset_y = (max_y + min_y) / 2
-    print(f"\nOffsets de calibración:")
-    print(f"  offset_x = {offset_x:.1f}")
-    print(f"  offset_y = {offset_y:.1f}")
-    print(f"\nUsa: rumbo = atan2(my - {offset_y:.1f}, mx - {offset_x:.1f})")
-```
-
-**Esto te debe aparecer en Thonny** (mientras giras la placa):
-
-```
-Gira la NOVA_sense lentamente en todas las direcciones...
-Presiona Ctrl+C cuando hayas completado varias rotaciones.
-
-X:[-45, 52]  Y:[-38, 47]
-X:[-45, 52]  Y:[-38, 48]
-X:[-46, 52]  Y:[-39, 48]
-```
-
-**Al presionar Ctrl+C:**
-
-```
-Offsets de calibración:
-  offset_x = 3.0
-  offset_y = 4.5
-
-Usa: rumbo = atan2(my - 4.5, mx - 3.0)
-```
-
-> Gira la NOVA_sense lentamente haciendo un "8" en el aire durante 15-20 segundos para capturar la mayor cantidad de direcciones. Después de calibrar, resta los offsets en la función `calcular_rumbo()` para obtener un Norte más preciso.
-
-### 5.11 Consejos para lecturas estables de la NOVA_sense
-
-- **Alejarse de imanes y metales**: el magnetómetro es muy sensible. Motores, altavoces y cables con corriente alteran las lecturas.
-- **Promediar lecturas**: si los valores fluctúan, toma varias muestras y promédialas:
-
-```python
-def leer_accel_promedio(n=10):
-    sx, sy, sz = 0, 0, 0
+def leer_promedio(adc, n=10):
+    suma = 0
     for _ in range(n):
-        ax, ay, az = leer_acelerometro()
-        sx += ax; sy += ay; sz += az
-    return sx/n, sy/n, sz/n
+        suma += adc.read_u16()
+    return suma // n
 ```
 
-- **Calibrar el giroscopio al inicio**: toma 100 lecturas con la placa quieta y calcula el offset promedio para restarlo.
-- **Cable I2C corto**: mantén los cables SDA y SCL lo más cortos posible para evitar errores de comunicación.
-- **No tocar la placa durante mediciones**: el calor de los dedos y la vibración afectan las lecturas del giroscopio.
-- **Frecuencia de muestreo**: el LSM6DS3 soporta desde 12.5 Hz hasta 6.66 kHz. Para la mayoría de proyectos, 104 Hz (configuración por defecto en estos ejemplos) es suficiente.
+- **Condensador de filtro**: un condensador cerámico de 100 nF entre el pin ADC y GND reduce el ruido eléctrico significativamente.
+- **No mezclar señales ruidosas**: mantén los cables analógicos separados de motores o actuadores que generan interferencia.
+- **Alimentación estable**: usa la salida 3V3 de la NOVA_pico como referencia; voltajes inestables producen lecturas erróneas.
+
+### 5.10 Uso de sensores comunes (temperatura, luz, movimiento)
+
+Contenido sobre sensores comunes...
+
+### 5.11 Actuadores (motores, servos) y consideraciones de potencia
+
+Contenido sobre actuadores...
 
 # 6 Proyectos de ejemplo
 
