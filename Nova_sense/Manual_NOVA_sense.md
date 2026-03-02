@@ -123,7 +123,11 @@ Conectar la NOVA_sense es tan sencillo como conectar unos audífonos: solo neces
 - Si ya tienes otros sensores I2C conectados, la NOVA_sense puede compartir los mismos cables SDA y SCL — como enchufar varios aparatos a la misma regleta.
 - Muchas placas ya incluyen resistencias pull-up; si la tuya no las tiene, añade una de 4.7 kΩ en SDA y otra en SCL.
 
-![Diagrama de pines de la NOVA_sense](DIAGRAMA%20DE%20PINES.png)
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.45\textwidth]{DIAGRAMA DE PINES.png}
+\caption{Diagrama de pines de la NOVA\_sense}
+\end{figure}
 
 ### 2.3 Entorno de programación: Thonny
 
