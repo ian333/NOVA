@@ -125,7 +125,7 @@ Conectar la NOVA_sense es tan sencillo como conectar unos audífonos: solo neces
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.45\textwidth]{DIAGRAMA DE PINES.png}
+\includegraphics[width=0.45\textwidth]{DIAGRAMA DE PINES 2.png}
 \caption{Diagrama de pines de la NOVA\_sense}
 \end{figure}
 
